@@ -403,6 +403,8 @@ export const ModelName = {
   EntityAlias: 'EntityAlias',
   FinancialEvent: 'FinancialEvent',
   TransactionRecord: 'TransactionRecord',
+  EntityIdentifier: 'EntityIdentifier',
+  StatementImport: 'StatementImport',
   EntityMatchDecision: 'EntityMatchDecision'
 } as const
 
@@ -419,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "entity" | "entityAlias" | "financialEvent" | "transactionRecord" | "entityMatchDecision"
+    modelProps: "user" | "account" | "entity" | "entityAlias" | "financialEvent" | "transactionRecord" | "entityIdentifier" | "statementImport" | "entityMatchDecision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -867,6 +869,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EntityIdentifier: {
+      payload: Prisma.$EntityIdentifierPayload<ExtArgs>
+      fields: Prisma.EntityIdentifierFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EntityIdentifierFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EntityIdentifierFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        findFirst: {
+          args: Prisma.EntityIdentifierFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EntityIdentifierFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        findMany: {
+          args: Prisma.EntityIdentifierFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>[]
+        }
+        create: {
+          args: Prisma.EntityIdentifierCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        createMany: {
+          args: Prisma.EntityIdentifierCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EntityIdentifierCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>[]
+        }
+        delete: {
+          args: Prisma.EntityIdentifierDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        update: {
+          args: Prisma.EntityIdentifierUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        deleteMany: {
+          args: Prisma.EntityIdentifierDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EntityIdentifierUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EntityIdentifierUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>[]
+        }
+        upsert: {
+          args: Prisma.EntityIdentifierUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EntityIdentifierPayload>
+        }
+        aggregate: {
+          args: Prisma.EntityIdentifierAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEntityIdentifier>
+        }
+        groupBy: {
+          args: Prisma.EntityIdentifierGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EntityIdentifierGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EntityIdentifierCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EntityIdentifierCountAggregateOutputType> | number
+        }
+      }
+    }
+    StatementImport: {
+      payload: Prisma.$StatementImportPayload<ExtArgs>
+      fields: Prisma.StatementImportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StatementImportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StatementImportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        findFirst: {
+          args: Prisma.StatementImportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StatementImportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        findMany: {
+          args: Prisma.StatementImportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>[]
+        }
+        create: {
+          args: Prisma.StatementImportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        createMany: {
+          args: Prisma.StatementImportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StatementImportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>[]
+        }
+        delete: {
+          args: Prisma.StatementImportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        update: {
+          args: Prisma.StatementImportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        deleteMany: {
+          args: Prisma.StatementImportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StatementImportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StatementImportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>[]
+        }
+        upsert: {
+          args: Prisma.StatementImportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StatementImportPayload>
+        }
+        aggregate: {
+          args: Prisma.StatementImportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStatementImport>
+        }
+        groupBy: {
+          args: Prisma.StatementImportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StatementImportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StatementImportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StatementImportCountAggregateOutputType> | number
+        }
+      }
+    }
     EntityMatchDecision: {
       payload: Prisma.$EntityMatchDecisionPayload<ExtArgs>
       fields: Prisma.EntityMatchDecisionFieldRefs
@@ -997,6 +1147,12 @@ export const AccountScalarFieldEnum = {
   name: 'name',
   bankName: 'bankName',
   accountLast4: 'accountLast4',
+  accountType: 'accountType',
+  ifsc: 'ifsc',
+  branch: 'branch',
+  currency: 'currency',
+  nickname: 'nickname',
+  isPrimary: 'isPrimary',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1008,6 +1164,7 @@ export const EntityScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
+  type: 'type',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1047,6 +1204,7 @@ export const TransactionRecordScalarFieldEnum = {
   accountId: 'accountId',
   sourceType: 'sourceType',
   sourceReference: 'sourceReference',
+  rawRowHash: 'rawRowHash',
   rawDescription: 'rawDescription',
   amount: 'amount',
   direction: 'direction',
@@ -1056,6 +1214,37 @@ export const TransactionRecordScalarFieldEnum = {
 } as const
 
 export type TransactionRecordScalarFieldEnum = (typeof TransactionRecordScalarFieldEnum)[keyof typeof TransactionRecordScalarFieldEnum]
+
+
+export const EntityIdentifierScalarFieldEnum = {
+  id: 'id',
+  entityId: 'entityId',
+  type: 'type',
+  value: 'value',
+  rawValue: 'rawValue',
+  createdAt: 'createdAt'
+} as const
+
+export type EntityIdentifierScalarFieldEnum = (typeof EntityIdentifierScalarFieldEnum)[keyof typeof EntityIdentifierScalarFieldEnum]
+
+
+export const StatementImportScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  accountId: 'accountId',
+  sourceType: 'sourceType',
+  fileName: 'fileName',
+  fileHash: 'fileHash',
+  parsedCount: 'parsedCount',
+  importedCount: 'importedCount',
+  skippedCount: 'skippedCount',
+  flaggedCount: 'flaggedCount',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type StatementImportScalarFieldEnum = (typeof StatementImportScalarFieldEnum)[keyof typeof StatementImportScalarFieldEnum]
 
 
 export const EntityMatchDecisionScalarFieldEnum = {
@@ -1130,6 +1319,41 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'AccountType'
+ */
+export type EnumAccountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccountType'>
+    
+
+
+/**
+ * Reference to a field of type 'AccountType[]'
+ */
+export type ListEnumAccountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccountType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'EntityType'
+ */
+export type EnumEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EntityType'>
+    
+
+
+/**
+ * Reference to a field of type 'EntityType[]'
+ */
+export type ListEnumEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EntityType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -1186,16 +1410,16 @@ export type ListEnumSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
- * Reference to a field of type 'MatchDecision'
+ * Reference to a field of type 'IdentifierType'
  */
-export type EnumMatchDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchDecision'>
+export type EnumIdentifierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IdentifierType'>
     
 
 
 /**
- * Reference to a field of type 'MatchDecision[]'
+ * Reference to a field of type 'IdentifierType[]'
  */
-export type ListEnumMatchDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchDecision[]'>
+export type ListEnumIdentifierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IdentifierType[]'>
     
 
 
@@ -1210,6 +1434,48 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ImportStatus'
+ */
+export type EnumImportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImportStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ImportStatus[]'
+ */
+export type ListEnumImportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImportStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MatchDecision'
+ */
+export type EnumMatchDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchDecision'>
+    
+
+
+/**
+ * Reference to a field of type 'MatchDecision[]'
+ */
+export type ListEnumMatchDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchDecision[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1369,6 +1635,8 @@ export type GlobalOmitConfig = {
   entityAlias?: Prisma.EntityAliasOmit
   financialEvent?: Prisma.FinancialEventOmit
   transactionRecord?: Prisma.TransactionRecordOmit
+  entityIdentifier?: Prisma.EntityIdentifierOmit
+  statementImport?: Prisma.StatementImportOmit
   entityMatchDecision?: Prisma.EntityMatchDecisionOmit
 }
 

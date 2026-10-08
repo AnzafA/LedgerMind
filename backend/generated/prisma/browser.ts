@@ -48,6 +48,16 @@ export type FinancialEvent = Prisma.FinancialEventModel
  */
 export type TransactionRecord = Prisma.TransactionRecordModel
 /**
+ * Model EntityIdentifier
+ * 
+ */
+export type EntityIdentifier = Prisma.EntityIdentifierModel
+/**
+ * Model StatementImport
+ * 
+ */
+export type StatementImport = Prisma.StatementImportModel
+/**
  * Model EntityMatchDecision
  * 
  */

@@ -40,6 +40,7 @@ export type TransactionRecordMinAggregateOutputType = {
   accountId: string | null
   sourceType: $Enums.SourceType | null
   sourceReference: string | null
+  rawRowHash: string | null
   rawDescription: string | null
   amount: runtime.Decimal | null
   direction: $Enums.TransactionDirection | null
@@ -54,6 +55,7 @@ export type TransactionRecordMaxAggregateOutputType = {
   accountId: string | null
   sourceType: $Enums.SourceType | null
   sourceReference: string | null
+  rawRowHash: string | null
   rawDescription: string | null
   amount: runtime.Decimal | null
   direction: $Enums.TransactionDirection | null
@@ -68,6 +70,7 @@ export type TransactionRecordCountAggregateOutputType = {
   accountId: number
   sourceType: number
   sourceReference: number
+  rawRowHash: number
   rawDescription: number
   amount: number
   direction: number
@@ -92,6 +95,7 @@ export type TransactionRecordMinAggregateInputType = {
   accountId?: true
   sourceType?: true
   sourceReference?: true
+  rawRowHash?: true
   rawDescription?: true
   amount?: true
   direction?: true
@@ -106,6 +110,7 @@ export type TransactionRecordMaxAggregateInputType = {
   accountId?: true
   sourceType?: true
   sourceReference?: true
+  rawRowHash?: true
   rawDescription?: true
   amount?: true
   direction?: true
@@ -120,6 +125,7 @@ export type TransactionRecordCountAggregateInputType = {
   accountId?: true
   sourceType?: true
   sourceReference?: true
+  rawRowHash?: true
   rawDescription?: true
   amount?: true
   direction?: true
@@ -221,6 +227,7 @@ export type TransactionRecordGroupByOutputType = {
   accountId: string | null
   sourceType: $Enums.SourceType
   sourceReference: string | null
+  rawRowHash: string | null
   rawDescription: string | null
   amount: runtime.Decimal
   direction: $Enums.TransactionDirection
@@ -258,6 +265,7 @@ export type TransactionRecordWhereInput = {
   accountId?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   sourceType?: Prisma.EnumSourceTypeFilter<"TransactionRecord"> | $Enums.SourceType
   sourceReference?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
+  rawRowHash?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   rawDescription?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   amount?: Prisma.DecimalFilter<"TransactionRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFilter<"TransactionRecord"> | $Enums.TransactionDirection
@@ -274,6 +282,7 @@ export type TransactionRecordOrderByWithRelationInput = {
   accountId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   sourceReference?: Prisma.SortOrderInput | Prisma.SortOrder
+  rawRowHash?: Prisma.SortOrderInput | Prisma.SortOrder
   rawDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   direction?: Prisma.SortOrder
@@ -286,6 +295,8 @@ export type TransactionRecordOrderByWithRelationInput = {
 
 export type TransactionRecordWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  accountId_sourceReference?: Prisma.TransactionRecordAccountIdSourceReferenceCompoundUniqueInput
+  accountId_rawRowHash?: Prisma.TransactionRecordAccountIdRawRowHashCompoundUniqueInput
   AND?: Prisma.TransactionRecordWhereInput | Prisma.TransactionRecordWhereInput[]
   OR?: Prisma.TransactionRecordWhereInput[]
   NOT?: Prisma.TransactionRecordWhereInput | Prisma.TransactionRecordWhereInput[]
@@ -293,6 +304,7 @@ export type TransactionRecordWhereUniqueInput = Prisma.AtLeast<{
   accountId?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   sourceType?: Prisma.EnumSourceTypeFilter<"TransactionRecord"> | $Enums.SourceType
   sourceReference?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
+  rawRowHash?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   rawDescription?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   amount?: Prisma.DecimalFilter<"TransactionRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFilter<"TransactionRecord"> | $Enums.TransactionDirection
@@ -301,7 +313,7 @@ export type TransactionRecordWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"TransactionRecord"> | Date | string
   financialEvent?: Prisma.XOR<Prisma.FinancialEventScalarRelationFilter, Prisma.FinancialEventWhereInput>
   account?: Prisma.XOR<Prisma.AccountNullableScalarRelationFilter, Prisma.AccountWhereInput> | null
-}, "id">
+}, "id" | "accountId_sourceReference" | "accountId_rawRowHash">
 
 export type TransactionRecordOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -309,6 +321,7 @@ export type TransactionRecordOrderByWithAggregationInput = {
   accountId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   sourceReference?: Prisma.SortOrderInput | Prisma.SortOrder
+  rawRowHash?: Prisma.SortOrderInput | Prisma.SortOrder
   rawDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   direction?: Prisma.SortOrder
@@ -331,6 +344,7 @@ export type TransactionRecordScalarWhereWithAggregatesInput = {
   accountId?: Prisma.StringNullableWithAggregatesFilter<"TransactionRecord"> | string | null
   sourceType?: Prisma.EnumSourceTypeWithAggregatesFilter<"TransactionRecord"> | $Enums.SourceType
   sourceReference?: Prisma.StringNullableWithAggregatesFilter<"TransactionRecord"> | string | null
+  rawRowHash?: Prisma.StringNullableWithAggregatesFilter<"TransactionRecord"> | string | null
   rawDescription?: Prisma.StringNullableWithAggregatesFilter<"TransactionRecord"> | string | null
   amount?: Prisma.DecimalWithAggregatesFilter<"TransactionRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionWithAggregatesFilter<"TransactionRecord"> | $Enums.TransactionDirection
@@ -343,6 +357,7 @@ export type TransactionRecordCreateInput = {
   id?: string
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -359,6 +374,7 @@ export type TransactionRecordUncheckedCreateInput = {
   accountId?: string | null
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -371,6 +387,7 @@ export type TransactionRecordUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -387,6 +404,7 @@ export type TransactionRecordUncheckedUpdateInput = {
   accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -401,6 +419,7 @@ export type TransactionRecordCreateManyInput = {
   accountId?: string | null
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -413,6 +432,7 @@ export type TransactionRecordUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -427,6 +447,7 @@ export type TransactionRecordUncheckedUpdateManyInput = {
   accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -445,12 +466,23 @@ export type TransactionRecordOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type TransactionRecordAccountIdSourceReferenceCompoundUniqueInput = {
+  accountId: string
+  sourceReference: string
+}
+
+export type TransactionRecordAccountIdRawRowHashCompoundUniqueInput = {
+  accountId: string
+  rawRowHash: string
+}
+
 export type TransactionRecordCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   financialEventId?: Prisma.SortOrder
   accountId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   sourceReference?: Prisma.SortOrder
+  rawRowHash?: Prisma.SortOrder
   rawDescription?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   direction?: Prisma.SortOrder
@@ -469,6 +501,7 @@ export type TransactionRecordMaxOrderByAggregateInput = {
   accountId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   sourceReference?: Prisma.SortOrder
+  rawRowHash?: Prisma.SortOrder
   rawDescription?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   direction?: Prisma.SortOrder
@@ -483,6 +516,7 @@ export type TransactionRecordMinOrderByAggregateInput = {
   accountId?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
   sourceReference?: Prisma.SortOrder
+  rawRowHash?: Prisma.SortOrder
   rawDescription?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   direction?: Prisma.SortOrder
@@ -587,6 +621,7 @@ export type TransactionRecordCreateWithoutAccountInput = {
   id?: string
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -601,6 +636,7 @@ export type TransactionRecordUncheckedCreateWithoutAccountInput = {
   financialEventId: string
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -644,6 +680,7 @@ export type TransactionRecordScalarWhereInput = {
   accountId?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   sourceType?: Prisma.EnumSourceTypeFilter<"TransactionRecord"> | $Enums.SourceType
   sourceReference?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
+  rawRowHash?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   rawDescription?: Prisma.StringNullableFilter<"TransactionRecord"> | string | null
   amount?: Prisma.DecimalFilter<"TransactionRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFilter<"TransactionRecord"> | $Enums.TransactionDirection
@@ -656,6 +693,7 @@ export type TransactionRecordCreateWithoutFinancialEventInput = {
   id?: string
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -670,6 +708,7 @@ export type TransactionRecordUncheckedCreateWithoutFinancialEventInput = {
   accountId?: string | null
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -709,6 +748,7 @@ export type TransactionRecordCreateManyAccountInput = {
   financialEventId: string
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -721,6 +761,7 @@ export type TransactionRecordUpdateWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -735,6 +776,7 @@ export type TransactionRecordUncheckedUpdateWithoutAccountInput = {
   financialEventId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -748,6 +790,7 @@ export type TransactionRecordUncheckedUpdateManyWithoutAccountInput = {
   financialEventId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -761,6 +804,7 @@ export type TransactionRecordCreateManyFinancialEventInput = {
   accountId?: string | null
   sourceType: $Enums.SourceType
   sourceReference?: string | null
+  rawRowHash?: string | null
   rawDescription?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   direction: $Enums.TransactionDirection
@@ -773,6 +817,7 @@ export type TransactionRecordUpdateWithoutFinancialEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -787,6 +832,7 @@ export type TransactionRecordUncheckedUpdateWithoutFinancialEventInput = {
   accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -800,6 +846,7 @@ export type TransactionRecordUncheckedUpdateManyWithoutFinancialEventInput = {
   accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
   sourceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rawRowHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rawDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   direction?: Prisma.EnumTransactionDirectionFieldUpdateOperationsInput | $Enums.TransactionDirection
@@ -816,6 +863,7 @@ export type TransactionRecordSelect<ExtArgs extends runtime.Types.Extensions.Int
   accountId?: boolean
   sourceType?: boolean
   sourceReference?: boolean
+  rawRowHash?: boolean
   rawDescription?: boolean
   amount?: boolean
   direction?: boolean
@@ -832,6 +880,7 @@ export type TransactionRecordSelectCreateManyAndReturn<ExtArgs extends runtime.T
   accountId?: boolean
   sourceType?: boolean
   sourceReference?: boolean
+  rawRowHash?: boolean
   rawDescription?: boolean
   amount?: boolean
   direction?: boolean
@@ -848,6 +897,7 @@ export type TransactionRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   accountId?: boolean
   sourceType?: boolean
   sourceReference?: boolean
+  rawRowHash?: boolean
   rawDescription?: boolean
   amount?: boolean
   direction?: boolean
@@ -864,6 +914,7 @@ export type TransactionRecordSelectScalar = {
   accountId?: boolean
   sourceType?: boolean
   sourceReference?: boolean
+  rawRowHash?: boolean
   rawDescription?: boolean
   amount?: boolean
   direction?: boolean
@@ -872,7 +923,7 @@ export type TransactionRecordSelectScalar = {
   createdAt?: boolean
 }
 
-export type TransactionRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "financialEventId" | "accountId" | "sourceType" | "sourceReference" | "rawDescription" | "amount" | "direction" | "status" | "occurredAt" | "createdAt", ExtArgs["result"]["transactionRecord"]>
+export type TransactionRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "financialEventId" | "accountId" | "sourceType" | "sourceReference" | "rawRowHash" | "rawDescription" | "amount" | "direction" | "status" | "occurredAt" | "createdAt", ExtArgs["result"]["transactionRecord"]>
 export type TransactionRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   financialEvent?: boolean | Prisma.FinancialEventDefaultArgs<ExtArgs>
   account?: boolean | Prisma.TransactionRecord$accountArgs<ExtArgs>
@@ -898,6 +949,7 @@ export type $TransactionRecordPayload<ExtArgs extends runtime.Types.Extensions.I
     accountId: string | null
     sourceType: $Enums.SourceType
     sourceReference: string | null
+    rawRowHash: string | null
     rawDescription: string | null
     amount: runtime.Decimal
     direction: $Enums.TransactionDirection
@@ -1334,6 +1386,7 @@ export interface TransactionRecordFieldRefs {
   readonly accountId: Prisma.FieldRef<"TransactionRecord", 'String'>
   readonly sourceType: Prisma.FieldRef<"TransactionRecord", 'SourceType'>
   readonly sourceReference: Prisma.FieldRef<"TransactionRecord", 'String'>
+  readonly rawRowHash: Prisma.FieldRef<"TransactionRecord", 'String'>
   readonly rawDescription: Prisma.FieldRef<"TransactionRecord", 'String'>
   readonly amount: Prisma.FieldRef<"TransactionRecord", 'Decimal'>
   readonly direction: Prisma.FieldRef<"TransactionRecord", 'TransactionDirection'>

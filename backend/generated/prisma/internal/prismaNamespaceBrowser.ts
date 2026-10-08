@@ -57,6 +57,8 @@ export const ModelName = {
   EntityAlias: 'EntityAlias',
   FinancialEvent: 'FinancialEvent',
   TransactionRecord: 'TransactionRecord',
+  EntityIdentifier: 'EntityIdentifier',
+  StatementImport: 'StatementImport',
   EntityMatchDecision: 'EntityMatchDecision'
 } as const
 
@@ -93,6 +95,12 @@ export const AccountScalarFieldEnum = {
   name: 'name',
   bankName: 'bankName',
   accountLast4: 'accountLast4',
+  accountType: 'accountType',
+  ifsc: 'ifsc',
+  branch: 'branch',
+  currency: 'currency',
+  nickname: 'nickname',
+  isPrimary: 'isPrimary',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -104,6 +112,7 @@ export const EntityScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
+  type: 'type',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -143,6 +152,7 @@ export const TransactionRecordScalarFieldEnum = {
   accountId: 'accountId',
   sourceType: 'sourceType',
   sourceReference: 'sourceReference',
+  rawRowHash: 'rawRowHash',
   rawDescription: 'rawDescription',
   amount: 'amount',
   direction: 'direction',
@@ -152,6 +162,37 @@ export const TransactionRecordScalarFieldEnum = {
 } as const
 
 export type TransactionRecordScalarFieldEnum = (typeof TransactionRecordScalarFieldEnum)[keyof typeof TransactionRecordScalarFieldEnum]
+
+
+export const EntityIdentifierScalarFieldEnum = {
+  id: 'id',
+  entityId: 'entityId',
+  type: 'type',
+  value: 'value',
+  rawValue: 'rawValue',
+  createdAt: 'createdAt'
+} as const
+
+export type EntityIdentifierScalarFieldEnum = (typeof EntityIdentifierScalarFieldEnum)[keyof typeof EntityIdentifierScalarFieldEnum]
+
+
+export const StatementImportScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  accountId: 'accountId',
+  sourceType: 'sourceType',
+  fileName: 'fileName',
+  fileHash: 'fileHash',
+  parsedCount: 'parsedCount',
+  importedCount: 'importedCount',
+  skippedCount: 'skippedCount',
+  flaggedCount: 'flaggedCount',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type StatementImportScalarFieldEnum = (typeof StatementImportScalarFieldEnum)[keyof typeof StatementImportScalarFieldEnum]
 
 
 export const EntityMatchDecisionScalarFieldEnum = {

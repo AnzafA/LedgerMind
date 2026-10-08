@@ -28,6 +28,7 @@ export type EntityMinAggregateOutputType = {
   id: string | null
   userId: string | null
   name: string | null
+  type: $Enums.EntityType | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type EntityMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   name: string | null
+  type: $Enums.EntityType | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type EntityCountAggregateOutputType = {
   id: number
   userId: number
   name: number
+  type: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type EntityMinAggregateInputType = {
   id?: true
   userId?: true
   name?: true
+  type?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type EntityMaxAggregateInputType = {
   id?: true
   userId?: true
   name?: true
+  type?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type EntityCountAggregateInputType = {
   id?: true
   userId?: true
   name?: true
+  type?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type EntityGroupByOutputType = {
   id: string
   userId: string
   name: string
+  type: $Enums.EntityType
   createdAt: Date
   updatedAt: Date
   _count: EntityCountAggregateOutputType | null
@@ -180,10 +187,12 @@ export type EntityWhereInput = {
   id?: Prisma.StringFilter<"Entity"> | string
   userId?: Prisma.StringFilter<"Entity"> | string
   name?: Prisma.StringFilter<"Entity"> | string
+  type?: Prisma.EnumEntityTypeFilter<"Entity"> | $Enums.EntityType
   createdAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   aliases?: Prisma.EntityAliasListRelationFilter
+  identifiers?: Prisma.EntityIdentifierListRelationFilter
   financialEvents?: Prisma.FinancialEventListRelationFilter
   matchDecisions?: Prisma.EntityMatchDecisionListRelationFilter
 }
@@ -192,10 +201,12 @@ export type EntityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   aliases?: Prisma.EntityAliasOrderByRelationAggregateInput
+  identifiers?: Prisma.EntityIdentifierOrderByRelationAggregateInput
   financialEvents?: Prisma.FinancialEventOrderByRelationAggregateInput
   matchDecisions?: Prisma.EntityMatchDecisionOrderByRelationAggregateInput
 }
@@ -207,10 +218,12 @@ export type EntityWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EntityWhereInput | Prisma.EntityWhereInput[]
   userId?: Prisma.StringFilter<"Entity"> | string
   name?: Prisma.StringFilter<"Entity"> | string
+  type?: Prisma.EnumEntityTypeFilter<"Entity"> | $Enums.EntityType
   createdAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   aliases?: Prisma.EntityAliasListRelationFilter
+  identifiers?: Prisma.EntityIdentifierListRelationFilter
   financialEvents?: Prisma.FinancialEventListRelationFilter
   matchDecisions?: Prisma.EntityMatchDecisionListRelationFilter
 }, "id">
@@ -219,6 +232,7 @@ export type EntityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EntityCountOrderByAggregateInput
@@ -233,6 +247,7 @@ export type EntityScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Entity"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Entity"> | string
   name?: Prisma.StringWithAggregatesFilter<"Entity"> | string
+  type?: Prisma.EnumEntityTypeWithAggregatesFilter<"Entity"> | $Enums.EntityType
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Entity"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Entity"> | Date | string
 }
@@ -240,10 +255,12 @@ export type EntityScalarWhereWithAggregatesInput = {
 export type EntityCreateInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEntitiesInput
   aliases?: Prisma.EntityAliasCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutEntityInput
 }
@@ -252,9 +269,11 @@ export type EntityUncheckedCreateInput = {
   id?: string
   userId: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   aliases?: Prisma.EntityAliasUncheckedCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierUncheckedCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutEntityInput
 }
@@ -262,10 +281,12 @@ export type EntityUncheckedCreateInput = {
 export type EntityUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEntitiesNestedInput
   aliases?: Prisma.EntityAliasUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutEntityNestedInput
 }
@@ -274,9 +295,11 @@ export type EntityUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aliases?: Prisma.EntityAliasUncheckedUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUncheckedUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutEntityNestedInput
 }
@@ -285,6 +308,7 @@ export type EntityCreateManyInput = {
   id?: string
   userId: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -292,6 +316,7 @@ export type EntityCreateManyInput = {
 export type EntityUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -300,6 +325,7 @@ export type EntityUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -318,6 +344,7 @@ export type EntityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -326,6 +353,7 @@ export type EntityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -334,6 +362,7 @@ export type EntityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -390,6 +419,10 @@ export type EntityUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.EntityScalarWhereInput | Prisma.EntityScalarWhereInput[]
 }
 
+export type EnumEntityTypeFieldUpdateOperationsInput = {
+  set?: $Enums.EntityType
+}
+
 export type EntityCreateNestedOneWithoutAliasesInput = {
   create?: Prisma.XOR<Prisma.EntityCreateWithoutAliasesInput, Prisma.EntityUncheckedCreateWithoutAliasesInput>
   connectOrCreate?: Prisma.EntityCreateOrConnectWithoutAliasesInput
@@ -420,6 +453,20 @@ export type EntityUpdateOneWithoutFinancialEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EntityUpdateToOneWithWhereWithoutFinancialEventsInput, Prisma.EntityUpdateWithoutFinancialEventsInput>, Prisma.EntityUncheckedUpdateWithoutFinancialEventsInput>
 }
 
+export type EntityCreateNestedOneWithoutIdentifiersInput = {
+  create?: Prisma.XOR<Prisma.EntityCreateWithoutIdentifiersInput, Prisma.EntityUncheckedCreateWithoutIdentifiersInput>
+  connectOrCreate?: Prisma.EntityCreateOrConnectWithoutIdentifiersInput
+  connect?: Prisma.EntityWhereUniqueInput
+}
+
+export type EntityUpdateOneRequiredWithoutIdentifiersNestedInput = {
+  create?: Prisma.XOR<Prisma.EntityCreateWithoutIdentifiersInput, Prisma.EntityUncheckedCreateWithoutIdentifiersInput>
+  connectOrCreate?: Prisma.EntityCreateOrConnectWithoutIdentifiersInput
+  upsert?: Prisma.EntityUpsertWithoutIdentifiersInput
+  connect?: Prisma.EntityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EntityUpdateToOneWithWhereWithoutIdentifiersInput, Prisma.EntityUpdateWithoutIdentifiersInput>, Prisma.EntityUncheckedUpdateWithoutIdentifiersInput>
+}
+
 export type EntityCreateNestedOneWithoutMatchDecisionsInput = {
   create?: Prisma.XOR<Prisma.EntityCreateWithoutMatchDecisionsInput, Prisma.EntityUncheckedCreateWithoutMatchDecisionsInput>
   connectOrCreate?: Prisma.EntityCreateOrConnectWithoutMatchDecisionsInput
@@ -437,9 +484,11 @@ export type EntityUpdateOneRequiredWithoutMatchDecisionsNestedInput = {
 export type EntityCreateWithoutUserInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   aliases?: Prisma.EntityAliasCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutEntityInput
 }
@@ -447,9 +496,11 @@ export type EntityCreateWithoutUserInput = {
 export type EntityUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   aliases?: Prisma.EntityAliasUncheckedCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierUncheckedCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutEntityInput
 }
@@ -487,6 +538,7 @@ export type EntityScalarWhereInput = {
   id?: Prisma.StringFilter<"Entity"> | string
   userId?: Prisma.StringFilter<"Entity"> | string
   name?: Prisma.StringFilter<"Entity"> | string
+  type?: Prisma.EnumEntityTypeFilter<"Entity"> | $Enums.EntityType
   createdAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Entity"> | Date | string
 }
@@ -494,9 +546,11 @@ export type EntityScalarWhereInput = {
 export type EntityCreateWithoutAliasesInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEntitiesInput
+  identifiers?: Prisma.EntityIdentifierCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutEntityInput
 }
@@ -505,8 +559,10 @@ export type EntityUncheckedCreateWithoutAliasesInput = {
   id?: string
   userId: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
+  identifiers?: Prisma.EntityIdentifierUncheckedCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutEntityInput
 }
@@ -530,9 +586,11 @@ export type EntityUpdateToOneWithWhereWithoutAliasesInput = {
 export type EntityUpdateWithoutAliasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEntitiesNestedInput
+  identifiers?: Prisma.EntityIdentifierUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutEntityNestedInput
 }
@@ -541,8 +599,10 @@ export type EntityUncheckedUpdateWithoutAliasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  identifiers?: Prisma.EntityIdentifierUncheckedUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutEntityNestedInput
 }
@@ -550,10 +610,12 @@ export type EntityUncheckedUpdateWithoutAliasesInput = {
 export type EntityCreateWithoutFinancialEventsInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEntitiesInput
   aliases?: Prisma.EntityAliasCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutEntityInput
 }
 
@@ -561,9 +623,11 @@ export type EntityUncheckedCreateWithoutFinancialEventsInput = {
   id?: string
   userId: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   aliases?: Prisma.EntityAliasUncheckedCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierUncheckedCreateNestedManyWithoutEntityInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutEntityInput
 }
 
@@ -586,10 +650,12 @@ export type EntityUpdateToOneWithWhereWithoutFinancialEventsInput = {
 export type EntityUpdateWithoutFinancialEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEntitiesNestedInput
   aliases?: Prisma.EntityAliasUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutEntityNestedInput
 }
 
@@ -597,19 +663,87 @@ export type EntityUncheckedUpdateWithoutFinancialEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aliases?: Prisma.EntityAliasUncheckedUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUncheckedUpdateManyWithoutEntityNestedInput
+  matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutEntityNestedInput
+}
+
+export type EntityCreateWithoutIdentifiersInput = {
+  id?: string
+  name: string
+  type?: $Enums.EntityType
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutEntitiesInput
+  aliases?: Prisma.EntityAliasCreateNestedManyWithoutEntityInput
+  financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutEntityInput
+  matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutEntityInput
+}
+
+export type EntityUncheckedCreateWithoutIdentifiersInput = {
+  id?: string
+  userId: string
+  name: string
+  type?: $Enums.EntityType
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  aliases?: Prisma.EntityAliasUncheckedCreateNestedManyWithoutEntityInput
+  financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutEntityInput
+  matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutEntityInput
+}
+
+export type EntityCreateOrConnectWithoutIdentifiersInput = {
+  where: Prisma.EntityWhereUniqueInput
+  create: Prisma.XOR<Prisma.EntityCreateWithoutIdentifiersInput, Prisma.EntityUncheckedCreateWithoutIdentifiersInput>
+}
+
+export type EntityUpsertWithoutIdentifiersInput = {
+  update: Prisma.XOR<Prisma.EntityUpdateWithoutIdentifiersInput, Prisma.EntityUncheckedUpdateWithoutIdentifiersInput>
+  create: Prisma.XOR<Prisma.EntityCreateWithoutIdentifiersInput, Prisma.EntityUncheckedCreateWithoutIdentifiersInput>
+  where?: Prisma.EntityWhereInput
+}
+
+export type EntityUpdateToOneWithWhereWithoutIdentifiersInput = {
+  where?: Prisma.EntityWhereInput
+  data: Prisma.XOR<Prisma.EntityUpdateWithoutIdentifiersInput, Prisma.EntityUncheckedUpdateWithoutIdentifiersInput>
+}
+
+export type EntityUpdateWithoutIdentifiersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutEntitiesNestedInput
+  aliases?: Prisma.EntityAliasUpdateManyWithoutEntityNestedInput
+  financialEvents?: Prisma.FinancialEventUpdateManyWithoutEntityNestedInput
+  matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutEntityNestedInput
+}
+
+export type EntityUncheckedUpdateWithoutIdentifiersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aliases?: Prisma.EntityAliasUncheckedUpdateManyWithoutEntityNestedInput
+  financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutEntityNestedInput
 }
 
 export type EntityCreateWithoutMatchDecisionsInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEntitiesInput
   aliases?: Prisma.EntityAliasCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutEntityInput
 }
 
@@ -617,9 +751,11 @@ export type EntityUncheckedCreateWithoutMatchDecisionsInput = {
   id?: string
   userId: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
   aliases?: Prisma.EntityAliasUncheckedCreateNestedManyWithoutEntityInput
+  identifiers?: Prisma.EntityIdentifierUncheckedCreateNestedManyWithoutEntityInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutEntityInput
 }
 
@@ -642,10 +778,12 @@ export type EntityUpdateToOneWithWhereWithoutMatchDecisionsInput = {
 export type EntityUpdateWithoutMatchDecisionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEntitiesNestedInput
   aliases?: Prisma.EntityAliasUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutEntityNestedInput
 }
 
@@ -653,15 +791,18 @@ export type EntityUncheckedUpdateWithoutMatchDecisionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aliases?: Prisma.EntityAliasUncheckedUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUncheckedUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutEntityNestedInput
 }
 
 export type EntityCreateManyUserInput = {
   id?: string
   name: string
+  type?: $Enums.EntityType
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -669,9 +810,11 @@ export type EntityCreateManyUserInput = {
 export type EntityUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aliases?: Prisma.EntityAliasUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutEntityNestedInput
 }
@@ -679,9 +822,11 @@ export type EntityUpdateWithoutUserInput = {
 export type EntityUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aliases?: Prisma.EntityAliasUncheckedUpdateManyWithoutEntityNestedInput
+  identifiers?: Prisma.EntityIdentifierUncheckedUpdateManyWithoutEntityNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutEntityNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutEntityNestedInput
 }
@@ -689,6 +834,7 @@ export type EntityUncheckedUpdateWithoutUserInput = {
 export type EntityUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEntityTypeFieldUpdateOperationsInput | $Enums.EntityType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -700,12 +846,14 @@ export type EntityUncheckedUpdateManyWithoutUserInput = {
 
 export type EntityCountOutputType = {
   aliases: number
+  identifiers: number
   financialEvents: number
   matchDecisions: number
 }
 
 export type EntityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   aliases?: boolean | EntityCountOutputTypeCountAliasesArgs
+  identifiers?: boolean | EntityCountOutputTypeCountIdentifiersArgs
   financialEvents?: boolean | EntityCountOutputTypeCountFinancialEventsArgs
   matchDecisions?: boolean | EntityCountOutputTypeCountMatchDecisionsArgs
 }
@@ -730,6 +878,13 @@ export type EntityCountOutputTypeCountAliasesArgs<ExtArgs extends runtime.Types.
 /**
  * EntityCountOutputType without action
  */
+export type EntityCountOutputTypeCountIdentifiersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EntityIdentifierWhereInput
+}
+
+/**
+ * EntityCountOutputType without action
+ */
 export type EntityCountOutputTypeCountFinancialEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FinancialEventWhereInput
 }
@@ -746,10 +901,12 @@ export type EntitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   userId?: boolean
   name?: boolean
+  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   aliases?: boolean | Prisma.Entity$aliasesArgs<ExtArgs>
+  identifiers?: boolean | Prisma.Entity$identifiersArgs<ExtArgs>
   financialEvents?: boolean | Prisma.Entity$financialEventsArgs<ExtArgs>
   matchDecisions?: boolean | Prisma.Entity$matchDecisionsArgs<ExtArgs>
   _count?: boolean | Prisma.EntityCountOutputTypeDefaultArgs<ExtArgs>
@@ -759,6 +916,7 @@ export type EntitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   userId?: boolean
   name?: boolean
+  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -768,6 +926,7 @@ export type EntitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   userId?: boolean
   name?: boolean
+  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -777,14 +936,16 @@ export type EntitySelectScalar = {
   id?: boolean
   userId?: boolean
   name?: boolean
+  type?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EntityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["entity"]>
+export type EntityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["entity"]>
 export type EntityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   aliases?: boolean | Prisma.Entity$aliasesArgs<ExtArgs>
+  identifiers?: boolean | Prisma.Entity$identifiersArgs<ExtArgs>
   financialEvents?: boolean | Prisma.Entity$financialEventsArgs<ExtArgs>
   matchDecisions?: boolean | Prisma.Entity$matchDecisionsArgs<ExtArgs>
   _count?: boolean | Prisma.EntityCountOutputTypeDefaultArgs<ExtArgs>
@@ -801,6 +962,7 @@ export type $EntityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     aliases: Prisma.$EntityAliasPayload<ExtArgs>[]
+    identifiers: Prisma.$EntityIdentifierPayload<ExtArgs>[]
     financialEvents: Prisma.$FinancialEventPayload<ExtArgs>[]
     matchDecisions: Prisma.$EntityMatchDecisionPayload<ExtArgs>[]
   }
@@ -808,6 +970,7 @@ export type $EntityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     userId: string
     name: string
+    type: $Enums.EntityType
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["entity"]>
@@ -1206,6 +1369,7 @@ export interface Prisma__EntityClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aliases<T extends Prisma.Entity$aliasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Entity$aliasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EntityAliasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  identifiers<T extends Prisma.Entity$identifiersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Entity$identifiersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EntityIdentifierPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   financialEvents<T extends Prisma.Entity$financialEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Entity$financialEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FinancialEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   matchDecisions<T extends Prisma.Entity$matchDecisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Entity$matchDecisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EntityMatchDecisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1240,6 +1404,7 @@ export interface EntityFieldRefs {
   readonly id: Prisma.FieldRef<"Entity", 'String'>
   readonly userId: Prisma.FieldRef<"Entity", 'String'>
   readonly name: Prisma.FieldRef<"Entity", 'String'>
+  readonly type: Prisma.FieldRef<"Entity", 'EntityType'>
   readonly createdAt: Prisma.FieldRef<"Entity", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Entity", 'DateTime'>
 }
@@ -1664,6 +1829,30 @@ export type Entity$aliasesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EntityAliasScalarFieldEnum | Prisma.EntityAliasScalarFieldEnum[]
+}
+
+/**
+ * Entity.identifiers
+ */
+export type Entity$identifiersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EntityIdentifier
+   */
+  select?: Prisma.EntityIdentifierSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EntityIdentifier
+   */
+  omit?: Prisma.EntityIdentifierOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EntityIdentifierInclude<ExtArgs> | null
+  where?: Prisma.EntityIdentifierWhereInput
+  orderBy?: Prisma.EntityIdentifierOrderByWithRelationInput | Prisma.EntityIdentifierOrderByWithRelationInput[]
+  cursor?: Prisma.EntityIdentifierWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EntityIdentifierScalarFieldEnum | Prisma.EntityIdentifierScalarFieldEnum[]
 }
 
 /**

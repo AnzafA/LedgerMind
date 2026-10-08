@@ -186,6 +186,7 @@ export type UserWhereInput = {
   entities?: Prisma.EntityListRelationFilter
   financialEvents?: Prisma.FinancialEventListRelationFilter
   matchDecisions?: Prisma.EntityMatchDecisionListRelationFilter
+  statementImports?: Prisma.StatementImportListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -198,6 +199,7 @@ export type UserOrderByWithRelationInput = {
   entities?: Prisma.EntityOrderByRelationAggregateInput
   financialEvents?: Prisma.FinancialEventOrderByRelationAggregateInput
   matchDecisions?: Prisma.EntityMatchDecisionOrderByRelationAggregateInput
+  statementImports?: Prisma.StatementImportOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -213,6 +215,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   entities?: Prisma.EntityListRelationFilter
   financialEvents?: Prisma.FinancialEventListRelationFilter
   matchDecisions?: Prisma.EntityMatchDecisionListRelationFilter
+  statementImports?: Prisma.StatementImportListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -247,6 +250,7 @@ export type UserCreateInput = {
   entities?: Prisma.EntityCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -259,6 +263,7 @@ export type UserUncheckedCreateInput = {
   entities?: Prisma.EntityUncheckedCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -271,6 +276,7 @@ export type UserUpdateInput = {
   entities?: Prisma.EntityUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -283,6 +289,7 @@ export type UserUncheckedUpdateInput = {
   entities?: Prisma.EntityUncheckedUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -392,6 +399,20 @@ export type UserUpdateOneRequiredWithoutFinancialEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFinancialEventsInput, Prisma.UserUpdateWithoutFinancialEventsInput>, Prisma.UserUncheckedUpdateWithoutFinancialEventsInput>
 }
 
+export type UserCreateNestedOneWithoutStatementImportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStatementImportsInput, Prisma.UserUncheckedCreateWithoutStatementImportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStatementImportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutStatementImportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStatementImportsInput, Prisma.UserUncheckedCreateWithoutStatementImportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStatementImportsInput
+  upsert?: Prisma.UserUpsertWithoutStatementImportsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStatementImportsInput, Prisma.UserUpdateWithoutStatementImportsInput>, Prisma.UserUncheckedUpdateWithoutStatementImportsInput>
+}
+
 export type UserCreateNestedOneWithoutMatchDecisionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutMatchDecisionsInput, Prisma.UserUncheckedCreateWithoutMatchDecisionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutMatchDecisionsInput
@@ -415,6 +436,7 @@ export type UserCreateWithoutAccountsInput = {
   entities?: Prisma.EntityCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -426,6 +448,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   entities?: Prisma.EntityUncheckedCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -453,6 +476,7 @@ export type UserUpdateWithoutAccountsInput = {
   entities?: Prisma.EntityUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -464,6 +488,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   entities?: Prisma.EntityUncheckedUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEntitiesInput = {
@@ -475,6 +500,7 @@ export type UserCreateWithoutEntitiesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEntitiesInput = {
@@ -486,6 +512,7 @@ export type UserUncheckedCreateWithoutEntitiesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEntitiesInput = {
@@ -513,6 +540,7 @@ export type UserUpdateWithoutEntitiesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEntitiesInput = {
@@ -524,6 +552,7 @@ export type UserUncheckedUpdateWithoutEntitiesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFinancialEventsInput = {
@@ -535,6 +564,7 @@ export type UserCreateWithoutFinancialEventsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   entities?: Prisma.EntityCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFinancialEventsInput = {
@@ -546,6 +576,7 @@ export type UserUncheckedCreateWithoutFinancialEventsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   entities?: Prisma.EntityUncheckedCreateNestedManyWithoutUserInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFinancialEventsInput = {
@@ -573,6 +604,7 @@ export type UserUpdateWithoutFinancialEventsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   entities?: Prisma.EntityUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFinancialEventsInput = {
@@ -583,6 +615,71 @@ export type UserUncheckedUpdateWithoutFinancialEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   entities?: Prisma.EntityUncheckedUpdateManyWithoutUserNestedInput
+  matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutStatementImportsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  entities?: Prisma.EntityCreateNestedManyWithoutUserInput
+  financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutUserInput
+  matchDecisions?: Prisma.EntityMatchDecisionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutStatementImportsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  entities?: Prisma.EntityUncheckedCreateNestedManyWithoutUserInput
+  financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutUserInput
+  matchDecisions?: Prisma.EntityMatchDecisionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutStatementImportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStatementImportsInput, Prisma.UserUncheckedCreateWithoutStatementImportsInput>
+}
+
+export type UserUpsertWithoutStatementImportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStatementImportsInput, Prisma.UserUncheckedUpdateWithoutStatementImportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStatementImportsInput, Prisma.UserUncheckedCreateWithoutStatementImportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStatementImportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStatementImportsInput, Prisma.UserUncheckedUpdateWithoutStatementImportsInput>
+}
+
+export type UserUpdateWithoutStatementImportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  entities?: Prisma.EntityUpdateManyWithoutUserNestedInput
+  financialEvents?: Prisma.FinancialEventUpdateManyWithoutUserNestedInput
+  matchDecisions?: Prisma.EntityMatchDecisionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStatementImportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  entities?: Prisma.EntityUncheckedUpdateManyWithoutUserNestedInput
+  financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutUserNestedInput
   matchDecisions?: Prisma.EntityMatchDecisionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -595,6 +692,7 @@ export type UserCreateWithoutMatchDecisionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   entities?: Prisma.EntityCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMatchDecisionsInput = {
@@ -606,6 +704,7 @@ export type UserUncheckedCreateWithoutMatchDecisionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   entities?: Prisma.EntityUncheckedCreateNestedManyWithoutUserInput
   financialEvents?: Prisma.FinancialEventUncheckedCreateNestedManyWithoutUserInput
+  statementImports?: Prisma.StatementImportUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMatchDecisionsInput = {
@@ -633,6 +732,7 @@ export type UserUpdateWithoutMatchDecisionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   entities?: Prisma.EntityUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMatchDecisionsInput = {
@@ -644,6 +744,7 @@ export type UserUncheckedUpdateWithoutMatchDecisionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   entities?: Prisma.EntityUncheckedUpdateManyWithoutUserNestedInput
   financialEvents?: Prisma.FinancialEventUncheckedUpdateManyWithoutUserNestedInput
+  statementImports?: Prisma.StatementImportUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -656,6 +757,7 @@ export type UserCountOutputType = {
   entities: number
   financialEvents: number
   matchDecisions: number
+  statementImports: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -663,6 +765,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   entities?: boolean | UserCountOutputTypeCountEntitiesArgs
   financialEvents?: boolean | UserCountOutputTypeCountFinancialEventsArgs
   matchDecisions?: boolean | UserCountOutputTypeCountMatchDecisionsArgs
+  statementImports?: boolean | UserCountOutputTypeCountStatementImportsArgs
 }
 
 /**
@@ -703,6 +806,13 @@ export type UserCountOutputTypeCountMatchDecisionsArgs<ExtArgs extends runtime.T
   where?: Prisma.EntityMatchDecisionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountStatementImportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StatementImportWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -714,6 +824,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   entities?: boolean | Prisma.User$entitiesArgs<ExtArgs>
   financialEvents?: boolean | Prisma.User$financialEventsArgs<ExtArgs>
   matchDecisions?: boolean | Prisma.User$matchDecisionsArgs<ExtArgs>
+  statementImports?: boolean | Prisma.User$statementImportsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -747,6 +858,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   entities?: boolean | Prisma.User$entitiesArgs<ExtArgs>
   financialEvents?: boolean | Prisma.User$financialEventsArgs<ExtArgs>
   matchDecisions?: boolean | Prisma.User$matchDecisionsArgs<ExtArgs>
+  statementImports?: boolean | Prisma.User$statementImportsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -759,6 +871,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     entities: Prisma.$EntityPayload<ExtArgs>[]
     financialEvents: Prisma.$FinancialEventPayload<ExtArgs>[]
     matchDecisions: Prisma.$EntityMatchDecisionPayload<ExtArgs>[]
+    statementImports: Prisma.$StatementImportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1164,6 +1277,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   entities<T extends Prisma.User$entitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$entitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EntityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   financialEvents<T extends Prisma.User$financialEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$financialEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FinancialEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   matchDecisions<T extends Prisma.User$matchDecisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$matchDecisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EntityMatchDecisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statementImports<T extends Prisma.User$statementImportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$statementImportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StatementImportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1684,6 +1798,30 @@ export type User$matchDecisionsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.EntityMatchDecisionScalarFieldEnum | Prisma.EntityMatchDecisionScalarFieldEnum[]
+}
+
+/**
+ * User.statementImports
+ */
+export type User$statementImportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StatementImport
+   */
+  select?: Prisma.StatementImportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StatementImport
+   */
+  omit?: Prisma.StatementImportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StatementImportInclude<ExtArgs> | null
+  where?: Prisma.StatementImportWhereInput
+  orderBy?: Prisma.StatementImportOrderByWithRelationInput | Prisma.StatementImportOrderByWithRelationInput[]
+  cursor?: Prisma.StatementImportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StatementImportScalarFieldEnum | Prisma.StatementImportScalarFieldEnum[]
 }
 
 /**

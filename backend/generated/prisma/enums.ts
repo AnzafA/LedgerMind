@@ -9,6 +9,56 @@
 * 🟢 You can import this file directly.
 */
 
+export const AccountType = {
+  SAVINGS: 'SAVINGS',
+  CURRENT: 'CURRENT',
+  OD_CC: 'OD_CC',
+  SALARY: 'SALARY',
+  JOINT: 'JOINT',
+  NRE: 'NRE',
+  NRO: 'NRO',
+  CREDIT_CARD: 'CREDIT_CARD',
+  WALLET: 'WALLET',
+  OTHER: 'OTHER'
+} as const
+
+export type AccountType = (typeof AccountType)[keyof typeof AccountType]
+
+
+export const EntityType = {
+  PERSON: 'PERSON',
+  BUSINESS: 'BUSINESS',
+  GOVERNMENT: 'GOVERNMENT',
+  BANK: 'BANK',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type EntityType = (typeof EntityType)[keyof typeof EntityType]
+
+
+export const IdentifierType = {
+  UPI: 'UPI',
+  ACCOUNT_NUMBER: 'ACCOUNT_NUMBER',
+  IFSC: 'IFSC',
+  PHONE: 'PHONE',
+  EMAIL: 'EMAIL',
+  NAME_FRAGMENT: 'NAME_FRAGMENT'
+} as const
+
+export type IdentifierType = (typeof IdentifierType)[keyof typeof IdentifierType]
+
+
+export const ImportStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  PARTIAL: 'PARTIAL',
+  FAILED: 'FAILED'
+} as const
+
+export type ImportStatus = (typeof ImportStatus)[keyof typeof ImportStatus]
+
+
 export const TransactionDirection = {
   CREDIT: 'CREDIT',
   DEBIT: 'DEBIT'

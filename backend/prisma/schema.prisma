@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TransactionDirection {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  REVERSED
+}
+
+enum SourceType {
+  MANUAL
+  BANK_STATEMENT
+  UPI
+  OTHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts        Account[]
+  entities        Entity[]
+  financialEvents FinancialEvent[]
+  matchDecisions EntityMatchDecision[]
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  bankName  String?
+  accountLast4 String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceRecords  TransactionRecord[]
+
+  @@index([userId])
+}
+
+model Entity {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aliases         EntityAlias[]
+  financialEvents FinancialEvent[]
+  matchDecisions EntityMatchDecision[]
+
+  @@index([userId])
+}
+
+model EntityAlias {
+  id        String   @id @default(cuid())
+  entityId  String
+  alias     String
+  createdAt DateTime @default(now())
+
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@index([entityId])
+}
+
+model FinancialEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  entityId    String?
+  amount      Decimal  @db.Decimal(18, 2)
+  direction   TransactionDirection
+  status      TransactionStatus
+  occurredAt  DateTime
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity        Entity?             @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  sourceRecords TransactionRecord[]
+
+  @@index([userId, occurredAt])
+  @@index([entityId, occurredAt])
+}
+
+model TransactionRecord {
+  id               String     @id @default(cuid())
+  financialEventId String
+  accountId        String?
+  sourceType       SourceType
+  sourceReference  String?
+  rawDescription   String?
+  amount           Decimal    @db.Decimal(18, 2)
+  direction        TransactionDirection
+  status           TransactionStatus
+  occurredAt       DateTime
+  createdAt        DateTime   @default(now())
+
+  financialEvent FinancialEvent @relation(fields: [financialEventId], references: [id], onDelete: Cascade)
+  account        Account?       @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@index([financialEventId])
+  @@index([accountId, occurredAt])
+  @@index([sourceReference])
+}
+enum MatchDecision {
+  SAME
+  NOT_SAME
+  REVIEW
+}
+
+model EntityMatchDecision {
+  id        String        @id @default(cuid())
+  userId    String
+  entityId  String
+  alias     String
+  decision  MatchDecision
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityId, alias])
+  @@index([userId, alias])
+  @@index([entityId])
+}

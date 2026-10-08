@@ -6,7 +6,43 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+enum AccountType {
+  SAVINGS
+  CURRENT
+  OD_CC
+  SALARY
+  JOINT
+  NRE
+  NRO
+  CREDIT_CARD
+  WALLET
+  OTHER
+}
 
+enum EntityType {
+  PERSON
+  BUSINESS
+  GOVERNMENT
+  BANK
+  UNKNOWN
+}
+
+enum IdentifierType {
+  UPI
+  ACCOUNT_NUMBER
+  IFSC
+  PHONE
+  EMAIL
+  NAME_FRAGMENT
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  PARTIAL
+  FAILED
+}
 enum TransactionDirection {
   CREDIT
   DEBIT
@@ -34,40 +70,51 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts        Account[]
-  entities        Entity[]
-  financialEvents FinancialEvent[]
-  matchDecisions EntityMatchDecision[]
+  accounts         Account[]
+  entities         Entity[]
+  financialEvents  FinancialEvent[]
+  matchDecisions   EntityMatchDecision[]
+  statementImports StatementImport[]
 }
 
 model Account {
-  id        String   @id @default(cuid())
-  userId    String
-  name      String
-  bankName  String?
-  accountLast4 String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String      @id @default(cuid())
+  userId        String
+  name          String
+  bankName      String?
+  accountLast4  String?
+  accountType   AccountType @default(SAVINGS)
+  ifsc          String?
+  branch        String?
+  currency      String      @default("INR")
+  nickname      String?
+  isPrimary     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sourceRecords  TransactionRecord[]
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceRecords   TransactionRecord[]
+  statementImports StatementImport[]
 
   @@index([userId])
 }
 
 model Entity {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   userId    String
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  type      EntityType @default(UNKNOWN)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   aliases         EntityAlias[]
+  identifiers     EntityIdentifier[]
   financialEvents FinancialEvent[]
-  matchDecisions EntityMatchDecision[]
+  matchDecisions  EntityMatchDecision[]
 
   @@index([userId])
+  @@index([userId, type])
 }
 
 model EntityAlias {
@@ -107,6 +154,7 @@ model TransactionRecord {
   accountId        String?
   sourceType       SourceType
   sourceReference  String?
+  rawRowHash       String?
   rawDescription   String?
   amount           Decimal    @db.Decimal(18, 2)
   direction        TransactionDirection
@@ -117,6 +165,8 @@ model TransactionRecord {
   financialEvent FinancialEvent @relation(fields: [financialEventId], references: [id], onDelete: Cascade)
   account        Account?       @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
+  @@unique([accountId, sourceReference])
+  @@unique([accountId, rawRowHash])
   @@index([financialEventId])
   @@index([accountId, occurredAt])
   @@index([sourceReference])
@@ -125,6 +175,42 @@ enum MatchDecision {
   SAME
   NOT_SAME
   REVIEW
+}
+model EntityIdentifier {
+  id        String         @id @default(cuid())
+  entityId  String
+  type      IdentifierType
+  value     String
+  rawValue  String
+  createdAt DateTime       @default(now())
+
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([entityId, type, value])
+  @@index([type, value])
+  @@index([entityId])
+}
+model StatementImport {
+  id            String       @id @default(cuid())
+  userId        String
+  accountId     String?
+  sourceType    SourceType
+  fileName      String?
+  fileHash      String
+  parsedCount   Int          @default(0)
+  importedCount Int          @default(0)
+  skippedCount  Int          @default(0)
+  flaggedCount  Int          @default(0)
+  status        ImportStatus @default(PENDING)
+  startedAt     DateTime     @default(now())
+  completedAt   DateTime?
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, fileHash])
+  @@index([userId, startedAt])
+  @@index([accountId, startedAt])
 }
 
 model EntityMatchDecision {
@@ -141,5 +227,6 @@ model EntityMatchDecision {
 
   @@unique([userId, entityId, alias])
   @@index([userId, alias])
+  @@index([userId, decision])
   @@index([entityId])
 }

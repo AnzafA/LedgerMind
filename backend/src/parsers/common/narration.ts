@@ -185,7 +185,18 @@ export function extractNarration(
       result.mode = "SWEEP";
     }
   }
-
+    // 11a. Reject noise names (amount text, charges, etc.)
+  if (result.counterpartyName) {
+    const upper = result.counterpartyName.toUpperCase();
+    if (
+      /^TXN AMT\./.test(upper) ||
+      /^CHARGES/.test(upper) ||
+      /^TXN\s/.test(upper) ||
+      /^\d+$/.test(upper.replace(/\s/g, ""))
+    ) {
+      result.counterpartyName = null;
+    }
+  }
   // --- 11. Title case the name ---
   if (result.counterpartyName) {
     const trimmed = result.counterpartyName.replace(/[\/,.\s]+$/, "").trim();

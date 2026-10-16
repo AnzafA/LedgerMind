@@ -58,6 +58,7 @@ export async function importStatement(
   }
 
   // Preload existing identifiers into a lookup map
+    // Preload existing identifiers AND entity names into a lookup map
   const entityByKey = new Map<string, string>();
   const existingIdentifiers = await query<{
     ENTITY_ID: string;
@@ -68,6 +69,14 @@ export async function importStatement(
   );
   for (const row of existingIdentifiers) {
     entityByKey.set(`${row.IDENTIFIER_TYPE}:${row.IDENTIFIER_VALUE}`, row.ENTITY_ID);
+  }
+
+  // Also load entity names so name-only entities match on re-import
+  const existingEntities = await query<{ ID: string; NAME: string }>(
+    `SELECT ID, NAME FROM LEDGERMIND.ENTITIES WHERE USER_ID = '${userId}'`
+  );
+  for (const row of existingEntities) {
+    entityByKey.set(`NAME:${row.NAME.toUpperCase()}`, row.ID);
   }
 
   let importedCount = 0;
@@ -123,13 +132,28 @@ export async function importStatement(
     }
 
     // Create FinancialEvent
-    const eventId = newId();
-    const t = now();
     const safeDesc = tx.description.replace(/'/g, "''");
     const occ = tx.date.toISOString().replace("T", " ").slice(0, 19);
     const entityIdSql = entityId ? `'${entityId}'` : "NULL";
+
+    const existing = await query<{ ID: string }>(
+      `SELECT ID FROM LEDGERMIND.FINANCIAL_EVENTS
+       WHERE USER_ID = '${userId}'
+         AND AMOUNT = ${tx.amount}
+         AND DIRECTION = '${tx.direction}'
+         AND OCCURRED_AT = '${occ}'
+         AND ${entityId ? `ENTITY_ID = '${entityId}'` : "ENTITY_ID IS NULL"}`
+    );
+
+    if (existing.length > 0) {
+      importedCount++;
+      continue;
+    }
+
+    const eventId = newId();
+    const t = now();
     await execute(
-      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
+            `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
     );
 
     // Create TransactionRecord

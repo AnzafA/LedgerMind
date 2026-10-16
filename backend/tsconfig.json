@@ -3,11 +3,13 @@
     "target": "ES2023",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist"
   },
-  "include": ["src"]
-}
+  "include": ["src", "scripts"]
+} 

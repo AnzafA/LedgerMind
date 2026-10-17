@@ -87,12 +87,17 @@ export default function EntitiesPage() {
                   <td className="px-6 py-4">
                     <Link
                       to={`/entities/${e.ID}`}
-                      className="font-medium hover:underline"
+                      className="font-medium hover:underline block"
                     >
                       {e.NAME}
                     </Link>
+                    {e.IDENTIFIERS && (
+                      <div className="text-xs text-slate-500 font-mono mt-0.5">
+                        {e.IDENTIFIERS}
+                      </div>
+                    )}
                     {!e.IS_VERIFIED && (
-                      <span className="ml-2 text-xs text-amber-600">
+                      <span className="text-xs text-amber-600 block mt-0.5">
                         unverified
                       </span>
                     )}

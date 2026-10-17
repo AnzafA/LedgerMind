@@ -8,6 +8,7 @@ export interface EntitySummary {
   RECEIVED: string;
   TX_COUNT: number;
   LAST_TX: string | null;
+  IDENTIFIERS: string | null;
 }
 
 export interface EntityDetail {

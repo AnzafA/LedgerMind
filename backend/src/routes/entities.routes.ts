@@ -12,21 +12,28 @@ async function getDemoUserId(): Promise<string | null> {
   return rows.length > 0 ? rows[0].ID : null;
 }
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
   try {
     const userId = await getDemoUserId();
     if (!userId) return res.json({ success: true, entities: [] });
+
+    const accountId = req.query.accountId as string | undefined;
+    const accountFilter = accountId
+      ? `AND r.ACCOUNT_ID = '${accountId}'`
+      : "";
 
     const entities = await query(
       `SELECT e.ID, e.NAME, e.IS_VERIFIED,
               COALESCE(SUM(CASE WHEN f.DIRECTION = 'DEBIT' THEN f.AMOUNT ELSE 0 END), 0) AS SENT,
               COALESCE(SUM(CASE WHEN f.DIRECTION = 'CREDIT' THEN f.AMOUNT ELSE 0 END), 0) AS RECEIVED,
-              COUNT(f.ID) AS TX_COUNT,
+              COUNT(DISTINCT f.ID) AS TX_COUNT,
               MAX(f.OCCURRED_AT) AS LAST_TX
        FROM LEDGERMIND.ENTITIES e
-       LEFT JOIN LEDGERMIND.FINANCIAL_EVENTS f ON f.ENTITY_ID = e.ID
-       WHERE e.USER_ID = '${userId}'
+       JOIN LEDGERMIND.FINANCIAL_EVENTS f ON f.ENTITY_ID = e.ID
+       JOIN LEDGERMIND.TRANSACTION_RECORDS r ON r.FINANCIAL_EVENT_ID = f.ID
+       WHERE e.USER_ID = '${userId}' ${accountFilter}
        GROUP BY e.ID, e.NAME, e.IS_VERIFIED
+       HAVING COUNT(f.ID) > 0
        ORDER BY (SUM(CASE WHEN f.DIRECTION = 'DEBIT' THEN f.AMOUNT ELSE 0 END) +
                  SUM(CASE WHEN f.DIRECTION = 'CREDIT' THEN f.AMOUNT ELSE 0 END)) DESC`
     );

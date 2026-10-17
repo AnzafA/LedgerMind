@@ -39,8 +39,25 @@ export interface ImportSummary {
   closingBalance?: number;
 }
 
-export async function listEntities(): Promise<EntitySummary[]> {
-  const res = await fetch(`${API}/entities`);
+export interface Account {
+  ID: string;
+  NAME: string;
+  BANK_NAME: string | null;
+  ACCOUNT_LAST4: string | null;
+  ACCOUNT_TYPE: string;
+}
+
+export async function listAccounts(): Promise<Account[]> {
+  const res = await fetch(`${API}/accounts`);
+  const data = await res.json();
+  return data.accounts ?? [];
+}
+
+export async function listEntities(accountId?: string): Promise<EntitySummary[]> {
+  const url = accountId
+    ? `${API}/entities?accountId=${encodeURIComponent(accountId)}`
+    : `${API}/entities`;
+  const res = await fetch(url);
   const data = await res.json();
   return data.entities ?? [];
 }

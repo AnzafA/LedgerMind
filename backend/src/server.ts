@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { query } from "./db/exasol.ts";
 import statementsRoutes from "./routes/statements.routes.ts";
 import entitiesRoutes from "./routes/entities.routes.ts";
+import accountsRoutes from "./routes/accounts.routes.ts";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json({ limit: "10mb" }));
 
 app.use("/api/statements", statementsRoutes);
 app.use("/api/entities", entitiesRoutes);
+app.use("/api/accounts", accountsRoutes);
 
 app.get("/api/health", async (_req, res) => {
   try {

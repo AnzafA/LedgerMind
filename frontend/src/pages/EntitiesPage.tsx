@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { listEntities,type EntitySummary } from "../api";
+import {
+  listEntities,
+  listAccounts,
+  type EntitySummary,
+  type Account,
+} from "../api";
 import { Link } from "react-router-dom";
 
 function formatINR(n: number): string {
@@ -12,14 +17,21 @@ function formatINR(n: number): string {
 
 export default function EntitiesPage() {
   const [entities, setEntities] = useState<EntitySummary[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<string>("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listEntities()
+    listAccounts().then(setAccounts);
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    listEntities(selectedAccount || undefined)
       .then(setEntities)
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedAccount]);
 
   const filtered = entities.filter((e) =>
     e.NAME.toLowerCase().includes(query.toLowerCase())
@@ -29,18 +41,32 @@ export default function EntitiesPage() {
     <div>
       <div className="flex items-baseline justify-between mb-6">
         <h1 className="text-3xl font-semibold tracking-tight">Counterparties</h1>
-        <div className="text-sm text-slate-500">
-          {entities.length} total
-        </div>
+        <div className="text-sm text-slate-500">{entities.length} total</div>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search by name…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="w-full mb-6 px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
-      />
+      <div className="flex gap-3 mb-6">
+        <input
+          type="text"
+          placeholder="Search by name…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+        />
+        {accounts.length > 0 && (
+          <select
+            value={selectedAccount}
+            onChange={(e) => setSelectedAccount(e.target.value)}
+            className="px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+          >
+            <option value="">All accounts</option>
+            {accounts.map((a) => (
+              <option key={a.ID} value={a.ID}>
+                {a.NAME} ••••{a.ACCOUNT_LAST4} ({a.ACCOUNT_TYPE})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
       {loading ? (
         <div className="text-slate-500">Loading…</div>

@@ -46,13 +46,18 @@ export async function importStatement(
 
   if (existingAccounts.length > 0) {
     accountId = existingAccounts[0].ID;
-  } else {
+    } else {
     accountId = newId();
     const t = now();
     const safeType = (parsed.accountInfo.accountType || "Savings").replace(/'/g, "''");
     const safeBranch = (parsed.accountInfo.branchName || "").replace(/'/g, "''");
+    const rawType = (parsed.accountInfo.accountType || "Savings").toUpperCase();
+    const accountType = rawType.includes("CURRENT") ? "CURRENT"
+      : rawType.includes("OD") || rawType.includes("OVERDRAFT") ? "OD_CC"
+      : rawType.includes("LOAN") ? "OTHER"
+      : "SAVINGS";
     await execute(
-      `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', 'Indian Bank', '${last4}', 'SAVINGS', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
+      `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', 'Indian Bank', '${last4}', '${accountType}', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
     );
     accountCreated = true;
   }

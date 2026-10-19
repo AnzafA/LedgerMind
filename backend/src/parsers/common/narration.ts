@@ -52,18 +52,15 @@ export function extractNarration(
     isBankCharge: false,
   };
 
-  // --- 1. Bank charges and interest ---
-  if (/^CREDIT INTEREST$/i.test(desc)) {
+    // --- 1. Bank charges and interest ---
+  if (/CREDIT\s+INTEREST/i.test(desc) || /^IMPS COMMISSION CHARGES$/i.test(desc)) {
     result.mode = "INTEREST";
     result.isBankCharge = true;
     return result;
   }
 
-  // --- 2. Self-transfers (SWEEP) ---
-  const isSweep =
-    /\bSWEEP\s+(FROM|TO)\b/i.test(desc) ||
-    /\bDEBIT SWEEP\b/i.test(desc) ||
-    /\/SWEEP FROM\b/i.test(desc);
+  // --- 2. Self-transfers (SWEEP, CAR LOAN) ---
+  const isSweep = /\bSWEEP\b|OWN|SELF|CAR LOAN|CASH DEP/i.test(desc);
   if (isSweep) {
     result.mode = "SWEEP";
     result.isSelfTransfer = true;
@@ -107,7 +104,6 @@ export function extractNarration(
   if (refMatch) result.reference = refMatch[1];
 
   // --- 7. Phone ---
-  // Mobile/XXXX in IMPS rows is the SENDER's device phone, not counterparty.
   const phoneMatch = desc.match(/(?:Payee|Beneficiary)\s*\/?\s*Mobile\/(\d{10})/i);
   if (phoneMatch) result.counterpartyPhone = phoneMatch[1];
 
@@ -126,9 +122,10 @@ export function extractNarration(
   }
 
   // --- 9. Counterparty name ---
+  
   // 9a. NAME /TRANSFER TO ...
   const beforeTransfer = desc.match(
-    /^([A-Za-z][A-Za-z0-9&.,' \-/]{2,80}?)\s*\/TRANSFER TO/i
+    /^([A-Za-z][A-Za-z0-9&.,' \-/]{2,80}?)\s*\/TRANSFER\s+(TO|FROM)/i
   );
   if (beforeTransfer) {
     const cleaned = beforeTransfer[1].replace(/\s+/g, " ").trim();
@@ -137,10 +134,10 @@ export function extractNarration(
     }
   }
 
-  // 9b. TRANSFER TO <acct> [/]<NAME>
+  // 9b. TRANSFER TO <acct> [/]<NAME>  (with negative lookahead to skip Txn Amt)
   if (!result.counterpartyName) {
     const afterAcct = desc.match(
-      /TRANSFER TO\s+\d{6,}\s*\/?\s*([A-Za-z][A-Za-z0-9&.,' \-]{2,60}?)(?:\s*\/|\s+Mobile|\s*$)/i
+      /TRANSFER TO\s+\d{6,}\s*\/?\s*(?!Txn Amt)([A-Za-z][A-Za-z0-9&.,' \-]{2,60}?)(?:\s*\/|\s+Mobile|\s*$)/i
     );
     if (afterAcct) {
       const name = afterAcct[1].replace(/\s+/g, " ").trim();
@@ -156,11 +153,13 @@ export function extractNarration(
   // 9c. NEFT/RTGS ref
   if (!result.counterpartyName) {
     const afterRef = desc.match(
-      /(?:NEFT|RTGS)\/[A-Z]{4}\/[A-Z0-9 ]+\/([A-Za-z][A-Za-z0-9 .]+?)\s*\//
+      /(?:NEFT|RTGS)\/[A-Z0-9]+\/[A-Z0-9 ]+?\/([A-Za-z0-9 .&'-]+?)(?:\s*\/|\s*$)/i
     );
     if (afterRef) {
       const name = afterRef[1].replace(/\s+/g, " ").trim();
-      if (name.length > 1) result.counterpartyName = name;
+      if (name.length > 1 && !/^(Fund Transfer|BRANCH)$/i.test(name)) {
+        result.counterpartyName = name;
+      }
     }
   }
 
@@ -173,38 +172,71 @@ export function extractNarration(
     }
   }
 
-  // --- 10. Self-transfer via account holder name ---
-  if (!result.isSelfTransfer && accountHolderName) {
-    const holderTokens = normalName(accountHolderName)
-      .split(" ")
-      .filter((t) => t.length > 2);
-    const descNorm = normalName(desc);
-    const matches = holderTokens.filter((t) => descNorm.includes(t));
-    if (matches.length >= 1 && /\bSWEEP\b|OWN|SELF/i.test(desc)) {
-      result.isSelfTransfer = true;
-      result.mode = "SWEEP";
+  // 9e. IFSC/NAME/XXXXX (UPI Received)
+  if (!result.counterpartyName) {
+    const upiReceived = desc.match(/[A-Z]{4}[0-9A-Z]{7}\/([A-Za-z0-9 .&'-]+?)[,\/]/i);
+    if (upiReceived) {
+      const name = upiReceived[1].replace(/\s+/g, " ").trim();
+      if (name.length > 2 && !/^(UPI|IMPS|BRANCH)$/i.test(name)) {
+        result.counterpartyName = name;
+      }
     }
   }
-    // 11a. Reject noise names (amount text, charges, etc.)
+
+  // 9g. PLEDGE TO Name
+  if (!result.counterpartyName) {
+    const pledge = desc.match(/PLEDGE TO\s+([A-Za-z0-9 .&'-]+?)(?:\/|\s*$)/i);
+    if (pledge) {
+      const name = pledge[1].replace(/\s+/g, " ").trim();
+      if (name.length > 2) result.counterpartyName = name;
+    }
+  }
+    // 9h. Contractor splitting name (merged from previous zero-amount row)
+  if (!result.counterpartyName) {
+    const contractorMatch = desc.match(/([A-Za-z0-9 .&'-]+?)\/TRANSFE/i);
+    if (contractorMatch) {
+      const name = contractorMatch[1].replace(/\s+/g, " ").trim();
+      if (name.length > 2) result.counterpartyName = name;
+    }
+  }
+    // 9i. NAME /BRANCH : (Bank forgot the TRANSFER TO tag)
+  if (!result.counterpartyName) {
+    const beforeBranch = desc.match(/^([A-Za-z0-9&.,' \-]{2,80}?)\s*\/BRANCH\s*:/i);
+    if (beforeBranch) {
+      const name = beforeBranch[1].trim();
+      if (!/^(DEBIT|CREDIT|Tax|SWEEP|BRANCH|CASH|CASH DEP)/i.test(name)) {
+        result.counterpartyName = name;
+      }
+    }
+  }
+
+  // 9j. NESF API Payouts
+  if (!result.counterpartyName && /NESF\/Payout|Payout\/API/i.test(desc)) {
+    result.counterpartyName = "NESF API Payout";
+  }
+
+  // 9k. CASH DEP (Categorize separately, do not treat as person)
+  if (/CASH DEP/i.test(desc)) {
+    result.counterpartyName = "Cash Deposit (Internal)";
+  }
+
+  // --- 11. Clean name into Title Case ---
   if (result.counterpartyName) {
-    const upper = result.counterpartyName.toUpperCase();
+    let trimmed = result.counterpartyName.replace(/[\/,.\s]+$/, "").trim();
     if (
-      /^TXN AMT\./.test(upper) ||
-      /^CHARGES/.test(upper) ||
-      /^TXN\s/.test(upper) ||
-      /^\d+$/.test(upper.replace(/\s/g, ""))
+      trimmed.length < 2 || 
+      /^\d+$/.test(trimmed) || 
+      /^(Txn Amt|Charges)/i.test(trimmed)
     ) {
-      result.counterpartyName = null;
-    }
-  }
-  // --- 11. Title case the name ---
-  if (result.counterpartyName) {
-    const trimmed = result.counterpartyName.replace(/[\/,.\s]+$/, "").trim();
-    if (trimmed.length < 2 || /^\d+$/.test(trimmed)) {
       result.counterpartyName = null;
     } else {
       result.counterpartyName = toTitleCase(trimmed);
     }
+  }
+
+  // --- 12. Fallback for missing names ---
+  if (!result.counterpartyName && !result.isSelfTransfer && !result.isBankCharge) {
+    result.counterpartyName = "Branch Transfer (Needs Review)";
   }
 
   return result;

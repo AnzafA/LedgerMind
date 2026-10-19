@@ -18,31 +18,46 @@ router.get("/", async (req, res) => {
     if (!userId) return res.json({ success: true, entities: [] });
 
     const accountId = req.query.accountId as string | undefined;
-    const accountFilter = accountId
-      ? `AND r.ACCOUNT_ID = '${accountId}'`
-      : "";
+    const accountFilter = accountId ? `AND r.ACCOUNT_ID = '${accountId}'` : "";
 
-    const entities = await query(
-      `SELECT e.ID, e.NAME, e.IS_VERIFIED,
-              COALESCE(SUM(CASE WHEN f.DIRECTION = 'DEBIT' THEN f.AMOUNT ELSE 0 END), 0) AS SENT,
-              COALESCE(SUM(CASE WHEN f.DIRECTION = 'CREDIT' THEN f.AMOUNT ELSE 0 END), 0) AS RECEIVED,
-              COUNT(DISTINCT f.ID) AS TX_COUNT,
-              MAX(f.OCCURRED_AT) AS LAST_TX,
-              (SELECT LISTAGG(i.IDENTIFIER_VALUE, ', ') WITHIN GROUP (ORDER BY i.IDENTIFIER_VALUE) FROM LEDGERMIND.ENTITY_IDENTIFIERS i WHERE i.ENTITY_ID = e.ID) AS IDENTIFIERS
+    // 1. Fetch entities and totals
+    const entities = await query<any>(
+      `SELECT 
+          e.ID, 
+          e.NAME, 
+          e.IS_VERIFIED,
+          COALESCE(SUM(CASE WHEN f.DIRECTION = 'DEBIT' THEN f.AMOUNT ELSE 0 END), 0) AS SENT,
+          COALESCE(SUM(CASE WHEN f.DIRECTION = 'CREDIT' THEN f.AMOUNT ELSE 0 END), 0) AS RECEIVED,
+          COUNT(DISTINCT f.ID) AS TX_COUNT,
+          MAX(f.OCCURRED_AT) AS LAST_TX
        FROM LEDGERMIND.ENTITIES e
        JOIN LEDGERMIND.FINANCIAL_EVENTS f ON f.ENTITY_ID = e.ID
        JOIN LEDGERMIND.TRANSACTION_RECORDS r ON r.FINANCIAL_EVENT_ID = f.ID
        WHERE e.USER_ID = '${userId}' ${accountFilter}
        GROUP BY e.ID, e.NAME, e.IS_VERIFIED
-       HAVING COUNT(f.ID) > 0
-       ORDER BY (SUM(CASE WHEN f.DIRECTION = 'DEBIT' THEN f.AMOUNT ELSE 0 END) +
-                 SUM(CASE WHEN f.DIRECTION = 'CREDIT' THEN f.AMOUNT ELSE 0 END)) DESC`
+       ORDER BY SENT DESC`
     );
+
+    // 2. Fetch all identifiers in one go and attach them in JS
+    const identifiers = await query<any>(
+      `SELECT ENTITY_ID, IDENTIFIER_VALUE FROM LEDGERMIND.ENTITY_IDENTIFIERS`
+    );
+    
+    const idMap = new Map();
+    for (const row of identifiers) {
+      if (!idMap.has(row.ENTITY_ID)) idMap.set(row.ENTITY_ID, []);
+      idMap.get(row.ENTITY_ID).push(row.IDENTIFIER_VALUE);
+    }
+
+    for (const e of entities) {
+      const ids = idMap.get(e.ID);
+      e.IDENTIFIERS = ids ? ids.join(", ") : null;
+    }
 
     res.json({ success: true, entities });
   } catch (error: any) {
     console.error("Entity list failed:", error);
-    res.status(500).json({ success: false, message: error?.message });
+    res.status(500).json({ success: false, message: error?.message || String(error) });
   }
 });
 

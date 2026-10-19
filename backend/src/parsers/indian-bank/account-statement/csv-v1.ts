@@ -1,11 +1,9 @@
-// backend/src/parsers/indian-bank/account-statement/csv-v1.ts
-
 import {
   ParsedAccountInfo,
   ParsedTransaction,
   ParseResult,
   StatementParser,
-} from "../../types";
+} from "../../types.ts";
 
 const PARSER_ID = "indian-bank/account-statement/csv-v1";
 
@@ -97,33 +95,47 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
     let curAmounts: number[] = [];
     let curStartRow = -1;
 
+    // Helper to find the value next to a label dynamically
+    function getNextValue(fields: string[]): string | undefined {
+      for (let i = 1; i < fields.length; i++) {
+        const val = fields[i].trim();
+        if (val && val !== "-" && !val.includes("INR")) return val;
+      }
+      return undefined;
+    }
+
     function flush() {
       if (!curDate) return;
 
       const description = curDescParts.join(" ").replace(/\s+/g, " ").trim();
+      let amount = 0;
+      let balance = 0;
 
-      if (curAmounts.length < 2) {
-        warnings.push(
-          `Row ${curStartRow}: expected amount + balance, found ${curAmounts.length}`
-        );
+      if (curAmounts.length === 1) {
+        balance = curAmounts[0];
+      } else if (curAmounts.length >= 2) {
+        balance = curAmounts[curAmounts.length - 1];
+        amount = curAmounts[curAmounts.length - 2];
+      } else {
+        warnings.push(`Row ${curStartRow}: no amounts found`);
         curDate = null;
         curDescParts = [];
         curAmounts = [];
         return;
       }
 
-      const balance = curAmounts[curAmounts.length - 1];
-      const amount = curAmounts[curAmounts.length - 2];
       let direction: "DEBIT" | "CREDIT" = "DEBIT";
 
       if (lastBalance !== null) {
         const delta = balance - lastBalance;
         if (Math.abs(delta - amount) < 0.01) direction = "CREDIT";
         else if (Math.abs(delta + amount) < 0.01) direction = "DEBIT";
-        else
+        else if (amount === 0) direction = "DEBIT";
+        else {
           warnings.push(
-            `Row ${curStartRow}: balance delta ${delta.toFixed(2)} ≠ amount ${amount.toFixed(2)} — defaulting to DEBIT`
+            `Row ${curStartRow}: balance delta ${delta.toFixed(2)} != amount ${amount.toFixed(2)}`
           );
+        }
       }
 
       transactions.push({
@@ -151,10 +163,7 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
 
       // --- Metadata section ---
       if (!headerSeen) {
-        if (
-          first === "Date" &&
-          (fields[1] ?? "").includes("Transaction Details")
-        ) {
+        if (first === "Date" && (fields[1] ?? "").includes("Transaction Details")) {
           headerSeen = true;
           if (accountInfo.openingBalance !== undefined) {
             lastBalance = accountInfo.openingBalance;
@@ -163,28 +172,29 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
         }
 
         if (first === "Account Holder Name") {
-          const parts: string[] = [];
-          if (fields[2]?.trim()) parts.push(fields[2].trim());
-          if (i + 1 < lines.length) {
-            const nxt = splitCSVLine(lines[i + 1]);
-            const n0 = (nxt[0] ?? "").trim();
-            const n1 = (nxt[1] ?? "").trim();
-            const n2 = (nxt[2] ?? "").trim();
-            if (!n0 && !n1 && n2) parts.push(n2);
-          }
-          accountInfo.holderName = parts.join(" ").trim();
+          const val = getNextValue(fields);
+          if (val) accountInfo.holderName = val;
         }
-
-        if (first === "Account Number" && fields[2]?.trim())
-          accountInfo.accountNumber = fields[2].trim();
-        if (first === "IFSC" && fields[2]?.trim())
-          accountInfo.ifsc = fields[2].trim();
-        if (first === "Account Type" && fields[2]?.trim())
-          accountInfo.accountType = fields[2].trim();
-        if (first === "Branch Name" && fields[2]?.trim())
-          accountInfo.branchName = fields[2].trim();
-        if (first === "Account Currency" && fields[2]?.trim())
-          accountInfo.currency = fields[2].trim();
+        if (first === "Account Number") {
+          const val = getNextValue(fields);
+          if (val) accountInfo.accountNumber = val;
+        }
+        if (first === "Account Type") {
+          const val = getNextValue(fields);
+          if (val) accountInfo.accountType = val;
+        }
+        if (first === "Branch Name") {
+          const val = getNextValue(fields);
+          if (val) accountInfo.branchName = val;
+        }
+        if (first === "IFSC") {
+          const val = getNextValue(fields);
+          if (val) accountInfo.ifsc = val;
+        }
+        if (first === "Account Currency") {
+          const val = getNextValue(fields);
+          if (val) accountInfo.currency = val;
+        }
 
         for (const f of fields) {
           const label = f.trim();
@@ -203,17 +213,11 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
       // --- Transaction section ---
 
       // Skip repeated header rows
-            // --- Transaction section ---
-
-      // Skip repeated header rows
-      if (
-        first === "Date" &&
-        (fields[1] ?? "").includes("Transaction Details")
-      ) {
+      if (first === "Date" && (fields[1] ?? "").includes("Transaction Details")) {
         continue;
       }
 
-      // Stop at the footer summary — these are not transactions
+      // Stop at the footer summary
       if (
         first === "Ending Balance" ||
         first === "Opening Balance" ||
@@ -235,11 +239,21 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
         if (j === 0 && rowDate) continue;
 
         const amt = parseAmount(f);
-        if (amt !== null) rowAmounts.push(amt);
-        else if (f !== "-") rowDesc.push(f);
+        if (amt !== null) {
+          rowAmounts.push(amt);
+        } else if (f !== "-") {
+          rowDesc.push(f);
+        }
       }
 
       if (rowDate) {
+        // Merge split transactions on the same day
+        if (curDate && rowDate.getTime() === curDate.getTime() && curAmounts.length === 1) {
+          if (rowDesc.length > 0) curDescParts.push(...rowDesc);
+          if (rowAmounts.length > 0) curAmounts.push(...rowAmounts);
+          continue;
+        }
+        
         flush();
         curDate = rowDate;
         curStartRow = i + 1;
@@ -249,7 +263,7 @@ export const indianBankAccountStatementCsvV1: StatementParser = {
         if (rowDesc.length > 0) curDescParts.push(...rowDesc);
         if (rowAmounts.length > 0) curAmounts.push(...rowAmounts);
       }
-    }
+    } // <--- THIS WAS THE MISSING BRACE!
 
     flush();
 

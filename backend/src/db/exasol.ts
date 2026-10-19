@@ -14,7 +14,8 @@ function createDriver() {
       port: parseInt(process.env.EXASOL_PORT || "8563"),
       user: process.env.EXASOL_USER || "sys",
       password: process.env.EXASOL_PASSWORD || "exasol",
-    }
+      poolSize: 10, 
+    } as any
   );
 }
 

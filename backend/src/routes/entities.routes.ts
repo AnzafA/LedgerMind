@@ -23,9 +23,17 @@ router.get("/", async (req, res) => {
     if (!userId) return res.json({ success: true, entities: [] });
 
     const accountId = req.query.accountId as string | undefined;
-    const accountFilter = accountId 
-      ? `AND f.ID IN (SELECT FINANCIAL_EVENT_ID FROM LEDGERMIND.TRANSACTION_RECORDS WHERE ACCOUNT_ID = '${accountId}')` 
-      : "";
+    const startDate = req.query.startDate as string | undefined;
+    const endDate = req.query.endDate as string | undefined;
+
+    let filters = `WHERE e.USER_ID = '${userId}'`;
+    
+    if (accountId) {
+      filters += ` AND f.ID IN (SELECT FINANCIAL_EVENT_ID FROM LEDGERMIND.TRANSACTION_RECORDS WHERE ACCOUNT_ID = '${accountId}')`;
+    }
+    if (startDate && endDate) {
+      filters += ` AND f.OCCURRED_AT >= '${startDate}' AND f.OCCURRED_AT <= '${endDate}'`;
+    }
 
     const entities = await query<any>(
       `SELECT 
@@ -38,7 +46,7 @@ router.get("/", async (req, res) => {
           MAX(f.OCCURRED_AT) AS LAST_TX
        FROM LEDGERMIND.ENTITIES e
        JOIN LEDGERMIND.FINANCIAL_EVENTS f ON f.ENTITY_ID = e.ID
-       WHERE e.USER_ID = '${userId}' ${accountFilter}
+       ${filters}
        GROUP BY e.ID, e.NAME, e.IS_VERIFIED
        ORDER BY SENT DESC`
     );

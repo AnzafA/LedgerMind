@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
-import { getEntity, verifyEntity, renameEntity, mergeEntity, listEntities, type EntityDetail, type EntitySummary } from "../api";
+import {
+  getEntity,
+  verifyEntity,
+  renameEntity,
+  mergeEntity,
+  listEntities,
+  type EntityDetail,
+  type EntitySummary,
+} from "../api";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 function formatINR(n: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -23,16 +32,14 @@ export default function EntityDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
   
-  // Rename state
-  const [newName, setNewName] = useState("");
+  const [verifying, setVerifying] = useState(false);
   const [renaming, setRenaming] = useState(false);
-
-  // Merge state
+  const [merging, setMerging] = useState(false);
+  
+  const [newName, setNewName] = useState("");
   const [allEntities, setAllEntities] = useState<EntitySummary[]>([]);
   const [mergeTarget, setMergeTarget] = useState("");
-  const [merging, setMerging] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,7 +78,6 @@ export default function EntityDetailPage() {
     setMerging(true);
     try {
       await mergeEntity(id, mergeTarget);
-      // Navigate back to entities page after merge
       navigate(previousAccountId ? `/entities?accountId=${previousAccountId}` : "/entities");
     } catch (e: any) {
       alert(e.message);
@@ -79,15 +85,11 @@ export default function EntityDetailPage() {
     }
   }
 
-    if (error) {
+  if (error) {
     return (
       <div className="text-center mt-20">
         <h2 className="text-2xl font-semibold text-slate-800 mb-2">Entity not found</h2>
-        <p className="text-slate-500 mb-6">
-          {error === "Entity not found" 
-            ? "This counterparty may have been merged or deleted." 
-            : error}
-        </p>
+        <p className="text-red-500 mb-6 text-sm max-w-lg mx-auto">{error}</p>
         <Link 
           to={previousAccountId ? `/entities?accountId=${previousAccountId}` : "/entities"} 
           className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800"
@@ -97,10 +99,17 @@ export default function EntityDetailPage() {
       </div>
     );
   }
-  if (!data) return <div className="text-slate-500">Loading…</div>;
+
+  if (!data) return <div className="text-slate-500 p-8">Loading…</div>;
 
   const sent = Number(data.totals.SENT);
   const received = Number(data.totals.RECEIVED);
+
+  const chartData = [
+    { name: "Sent", value: sent },
+    { name: "Received", value: received },
+  ];
+  const COLORS = ["#ef4444", "#15803d"];
 
   return (
     <div>
@@ -125,7 +134,7 @@ export default function EntityDetailPage() {
           <div className="mt-4 flex gap-2">
             <input
               type="text"
-              placeholder="Rename..."
+              placeholder="Rename entity..."
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900"
@@ -144,26 +153,41 @@ export default function EntityDetailPage() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total sent</div>
-          <div className="text-2xl font-semibold font-mono">{formatINR(sent)}</div>
+          <div className="text-2xl font-semibold font-mono text-red-600">{formatINR(sent)}</div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total received</div>
           <div className="text-2xl font-semibold font-mono text-green-700">{formatINR(received)}</div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Transactions</div>
           <div className="text-2xl font-semibold font-mono">{data.totals.TX_COUNT}</div>
         </div>
       </div>
 
-      {/* MERGE UI */}
+      {sent > 0 || received > 0 ? (
+        <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6 h-64 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-800 mb-2">Money Flow</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={chartData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value: any) => formatINR(Number(value))} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      ) : null}
+
       <div className="mt-8 bg-slate-50 border border-slate-200 rounded-xl p-6">
         <h3 className="text-sm font-semibold text-slate-800 mb-2">Is this a duplicate?</h3>
         <p className="text-xs text-slate-500 mb-4">If this entity is the same as another person (e.g., "Ag Arwal" and "Agarw Al"), merge them here. This action is permanent.</p>
         <div className="flex gap-2">
-          <select value={mergeTarget} onChange={(e) => setMergeTarget(e.target.value)} className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none">
+          <select value={mergeTarget} onChange={(e) => setMergeTarget(e.target.value)} className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900">
             <option value="">Select target entity to merge into...</option>
             {allEntities.filter(e => e.ID !== id).map(e => (
               <option key={e.ID} value={e.ID}>{e.NAME} ({e.IDENTIFIERS})</option>
@@ -176,7 +200,7 @@ export default function EntityDetailPage() {
       </div>
 
       <h2 className="mt-10 mb-4 text-lg font-semibold">Transactions</h2>
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -187,7 +211,7 @@ export default function EntityDetailPage() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {data.transactions.map((t) => (
-              <tr key={t.ID}>
+              <tr key={t.ID} className="hover:bg-slate-50">
                 <td className="px-6 py-3 text-sm whitespace-nowrap">{formatDate(t.OCCURRED_AT)}</td>
                 <td className="px-6 py-3 text-xs text-slate-500 font-mono break-all max-w-lg">
                   {t.DESCRIPTION}

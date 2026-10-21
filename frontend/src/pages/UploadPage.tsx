@@ -49,7 +49,7 @@ export default function UploadPage() {
         <input
           ref={inputRef}
           type="file"
-          accept=".csv"
+          accept=".csv,.pdf" // <--- ADD .pdf
           className="hidden"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
@@ -60,7 +60,7 @@ export default function UploadPage() {
           </div>
         ) : (
           <div>
-            <div className="text-lg font-medium mb-1">Click to select a CSV</div>
+            <div className="text-lg font-medium mb-1">Click to select a CSV or PDF</div>
             <div className="text-sm text-slate-500">
               Indian Bank account statement
             </div>
@@ -105,6 +105,8 @@ export default function UploadPage() {
             <dd className="font-medium text-right">{summary.importedCount}</dd>
             <dt className="text-slate-500">Self-transfers skipped</dt>
             <dd className="font-medium text-right">{summary.skippedSelfTransfers}</dd>
+                        <dt className="text-slate-500">Bank charges / Interest</dt>
+            <dd className="font-medium text-right">{summary.skippedBankCharges}</dd>
             <dt className="text-slate-500">Entities created</dt>
             <dd className="font-medium text-right">{summary.entitiesCreated}</dd>
             <dt className="text-slate-500">Entities matched</dt>

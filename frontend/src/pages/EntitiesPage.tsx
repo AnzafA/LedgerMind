@@ -5,7 +5,7 @@ import {
   type EntitySummary,
   type Account,
 } from "../api";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 function formatINR(n: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -18,9 +18,12 @@ function formatINR(n: number): string {
 export default function EntitiesPage() {
   const [entities, setEntities] = useState<EntitySummary[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedAccount, setSelectedAccount] = useState<string>("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedAccount = searchParams.get("accountId") || "";
 
   useEffect(() => {
     listAccounts().then(setAccounts);
@@ -28,10 +31,20 @@ export default function EntitiesPage() {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     listEntities(selectedAccount || undefined)
       .then(setEntities)
+      .catch((err) => {
+        setError("Failed to load entities. Please check backend terminal.");
+      })
       .finally(() => setLoading(false));
   }, [selectedAccount]);
+
+  const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (val) setSearchParams({ accountId: val });
+    else setSearchParams({});
+  };
 
   const filtered = entities.filter((e) =>
     e.NAME.toLowerCase().includes(query.toLowerCase())
@@ -55,7 +68,7 @@ export default function EntitiesPage() {
         {accounts.length > 0 && (
           <select
             value={selectedAccount}
-            onChange={(e) => setSelectedAccount(e.target.value)}
+            onChange={handleAccountChange}
             className="px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
           >
             <option value="">All accounts</option>
@@ -70,6 +83,10 @@ export default function EntitiesPage() {
 
       {loading ? (
         <div className="text-slate-500">Loading…</div>
+      ) : error ? (
+        <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
+          {error}
+        </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
           <table className="w-full">
@@ -87,6 +104,7 @@ export default function EntitiesPage() {
                   <td className="px-6 py-4">
                     <Link
                       to={`/entities/${e.ID}`}
+                      state={{ accountId: selectedAccount }}
                       className="font-medium hover:underline block"
                     >
                       {e.NAME}

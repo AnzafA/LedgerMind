@@ -20,6 +20,8 @@ export interface EntityDetail {
     DIRECTION: "DEBIT" | "CREDIT";
     OCCURRED_AT: string;
     DESCRIPTION: string;
+    ACCOUNT_NAME?: string;     // <-- Added
+    ACCOUNT_LAST4?: string;    // <-- Added
   }[];
   identifiers: { IDENTIFIER_TYPE: string; IDENTIFIER_VALUE: string }[];
 }

@@ -94,11 +94,20 @@ router.get("/:id", async (req, res) => {
        WHERE ENTITY_ID = '${req.params.id}'`
     );
 
-    const transactions = await query(
-      `SELECT ID, AMOUNT, DIRECTION, OCCURRED_AT, DESCRIPTION
-       FROM LEDGERMIND.FINANCIAL_EVENTS
-       WHERE ENTITY_ID = '${req.params.id}'
-       ORDER BY OCCURRED_AT DESC`
+        const transactions = await query(
+      `SELECT 
+         f.ID, 
+         f.AMOUNT, 
+         f.DIRECTION, 
+         f.OCCURRED_AT, 
+         f.DESCRIPTION,
+         a.NAME AS ACCOUNT_NAME,
+         a.ACCOUNT_LAST4
+       FROM LEDGERMIND.FINANCIAL_EVENTS f
+       LEFT JOIN LEDGERMIND.TRANSACTION_RECORDS r ON r.FINANCIAL_EVENT_ID = f.ID
+       LEFT JOIN LEDGERMIND.ACCOUNTS a ON a.ID = r.ACCOUNT_ID
+       WHERE f.ENTITY_ID = '${req.params.id}'
+       ORDER BY f.OCCURRED_AT DESC`
     );
 
     const identifiers = await query(

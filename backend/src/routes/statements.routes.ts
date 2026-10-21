@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import multer from "multer";
-import { importStatement } from "../services/import-statement.ts";
+import { importStatement, importParsedData } from "../services/import-statement.ts";
+import { parsePdfStatement } from "../parsers/indian-bank/pdf-parser.ts";
 import { query, execute, newId, now } from "../db/exasol.ts";
 
 const router = Router();
@@ -22,24 +23,43 @@ async function getOrCreateDemoUser(): Promise<string> {
   return id;
 }
 
-router.post("/import", upload.single("file"), async (req, res) => {
+router.post("/import", upload.single("file"), async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
+    // 1. Safe check for the uploaded file
+    const file = req.file;
+    if (!file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
-    const csvContent = req.file.buffer.toString("utf-8");
     const userId = await getOrCreateDemoUser();
-    const summary = await importStatement(userId, csvContent, req.file.originalname);
+    const fileName = file.originalname;
+    const isPdf = fileName.toLowerCase().endsWith(".pdf");
+    const fileBuffer = file.buffer;
 
+    let summary;
+
+    // 2. Route to the correct parser based on file extension
+    if (isPdf) {
+      console.log(`PDF detected (${fileName}). Parsing directly to JSON...`);
+      const parsed = await parsePdfStatement(fileBuffer);
+      summary = await importParsedData(userId, parsed, fileName);
+      console.log(`PDF import successful. Reconciled: ${summary.reconciles}`);
+    } else {
+      console.log(`CSV detected (${fileName}). Parsing as text...`);
+      const csvContent = fileBuffer.toString("utf-8");
+      summary = await importStatement(userId, csvContent, fileName);
+      console.log(`CSV import successful. Reconciled: ${summary.reconciles}`);
+    }
+
+    // 3. Return the summary to the frontend
     res.json({ success: true, summary });
   } catch (error: any) {
     console.error("Import failed:", error);
     res.status(500).json({
       success: false,
-      message: error?.message || "Import failed",
+      message: error?.message || "Import failed during processing",
     });
   }
 });
 
-export default router;
+export default router;  

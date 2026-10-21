@@ -14,8 +14,7 @@ function createDriver() {
       port: parseInt(process.env.EXASOL_PORT || "8563"),
       user: process.env.EXASOL_USER || "sys",
       password: process.env.EXASOL_PASSWORD || "exasol",
-      poolSize: 10, 
-    } as any
+    }
   );
 }
 
@@ -32,23 +31,47 @@ async function getDriver(): Promise<ExasolDriver> {
   return driver!;
 }
 
-/** For SELECT queries. Returns rows. */
-export async function query<T = Record<string, unknown>>(
-  sql: string
-): Promise<T[]> {
-  const d = await getDriver();
-  const result = await d.query(sql);
-  return result.getRows() as T[];
+// --- THE QUEUE (Prevents Pool Limit Crashes) ---
+let isProcessing = false;
+type QueueItem = { type: "query" | "execute"; sql: string; resolve: any; reject: any };
+const queue: QueueItem[] = [];
+
+async function processQueue() {
+  if (isProcessing || queue.length === 0) return;
+  isProcessing = true;
+  
+  const item = queue.shift()!;
+  try {
+    const d = await getDriver();
+    if (item.type === "query") {
+      const result = await d.query(item.sql);
+      item.resolve(result.getRows());
+    } else {
+      await d.execute(item.sql);
+      item.resolve();
+    }
+  } catch (err) {
+    item.reject(err);
+  } finally {
+    isProcessing = false;
+    processQueue(); // Process next item in queue
+  }
 }
 
-/** For DDL and DML (CREATE, INSERT, UPDATE, DELETE). Returns nothing. */
+export async function query<T = Record<string, unknown>>(sql: string): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    queue.push({ type: "query", sql, resolve, reject });
+    processQueue();
+  });
+}
+
 export async function execute(sql: string): Promise<void> {
-  const d = await getDriver();
-  await d.execute(sql);
+  return new Promise((resolve, reject) => {
+    queue.push({ type: "execute", sql, resolve, reject });
+    processQueue();
+  });
 }
-
-/** Alias for backwards compatibility. */
-export const exec = execute;
+// ------------------------------------------------
 
 export function newId(): string {
   return nanoid(24);

@@ -11,6 +11,11 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+// Catch any unhandled errors and return JSON instead of HTML
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Global Server Error:", err);
+  res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
+});
 
 app.use("/api/statements", statementsRoutes);
 app.use("/api/entities", entitiesRoutes);

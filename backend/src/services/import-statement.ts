@@ -2,6 +2,7 @@ import { detectParser } from "../parsers/index.ts";
 import { reconcile } from "../parsers/reconcile.ts";
 import { extractNarration } from "../parsers/common/narration.ts";
 import { query, execute, newId, now } from "../db/exasol.ts";
+import { ParseResult } from "../parsers/types.ts";
 
 export interface ImportSummary {
   importId: string;
@@ -19,24 +20,21 @@ export interface ImportSummary {
   closingBalance?: number;
 }
 
-export async function importStatement(
+// ============================================================================
+// 1. CORE IMPORT FUNCTION (Accepts parsed JSON from either CSV or PDF)
+// ============================================================================
+export async function importParsedData(
   userId: string,
-  csvContent: string,
+  parsed: ParseResult,
   fileName: string
 ): Promise<ImportSummary> {
-  const parser = detectParser(csvContent, fileName);
-  if (!parser) {
-    throw new Error("No parser recognized this file format.");
-  }
-
-  const parsed = parser.parse(csvContent);
-
+  // 1. Reconcile — hard fail if it doesn't match
   const rec = reconcile(parsed);
   if (!rec.ok) {
     throw new Error("Reconciliation failed: " + rec.message);
   }
 
-  // Find or create Account
+  // 2. Find or create Account
   let accountId: string;
   let accountCreated = false;
   const last4 = (parsed.accountInfo.accountNumber || "0000").slice(-4);
@@ -46,25 +44,27 @@ export async function importStatement(
 
   if (existingAccounts.length > 0) {
     accountId = existingAccounts[0].ID;
-    } else {
+  } else {
     accountId = newId();
     const t = now();
-    const safeType = (parsed.accountInfo.accountType || "Savings").replace(/'/g, "''");
-    const safeBranch = (parsed.accountInfo.branchName || "").replace(/'/g, "''");
     const rawType = (parsed.accountInfo.accountType || "Savings").toUpperCase();
     const accountType = rawType.includes("CURRENT") ? "CURRENT"
       : rawType.includes("OD") || rawType.includes("OVERDRAFT") ? "OD_CC"
       : rawType.includes("LOAN") ? "OTHER"
       : "SAVINGS";
+      
+    const safeType = (parsed.accountInfo.accountType || "Savings").replace(/'/g, "''");
+    const safeBranch = (parsed.accountInfo.branchName || "").replace(/'/g, "''");
+    
     await execute(
       `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', 'Indian Bank', '${last4}', '${accountType}', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
     );
     accountCreated = true;
   }
 
-  // Preload existing identifiers into a lookup map
-    // Preload existing identifiers AND entity names into a lookup map
+  // 3. Preload existing identifiers, names, and aliases into a lookup map
   const entityByKey = new Map<string, string>();
+  
   const existingIdentifiers = await query<{
     ENTITY_ID: string;
     IDENTIFIER_TYPE: string;
@@ -76,7 +76,6 @@ export async function importStatement(
     entityByKey.set(`${row.IDENTIFIER_TYPE}:${row.IDENTIFIER_VALUE}`, row.ENTITY_ID);
   }
 
-  // Also load entity names so name-only entities match on re-import
   const existingEntities = await query<{ ID: string; NAME: string }>(
     `SELECT ID, NAME FROM LEDGERMIND.ENTITIES WHERE USER_ID = '${userId}'`
   );
@@ -84,6 +83,14 @@ export async function importStatement(
     entityByKey.set(`NAME:${row.NAME.toUpperCase()}`, row.ID);
   }
 
+  const existingAliases = await query<{ ENTITY_ID: string; ALIAS: string }>(
+    `SELECT ENTITY_ID, ALIAS FROM LEDGERMIND.ENTITY_ALIASES WHERE ENTITY_ID IN (SELECT ID FROM LEDGERMIND.ENTITIES WHERE USER_ID = '${userId}')`
+  );
+  for (const row of existingAliases) {
+    entityByKey.set(`NAME:${row.ALIAS.toUpperCase()}`, row.ENTITY_ID);
+  }
+
+  // 4. Process transactions
   let importedCount = 0;
   let skippedSelfTransfers = 0;
   let skippedBankCharges = 0;
@@ -136,7 +143,7 @@ export async function importStatement(
       entitiesCreated++;
     }
 
-    // Create FinancialEvent
+    // Create FinancialEvent (skip if already exists)
     const safeDesc = tx.description.replace(/'/g, "''");
     const occ = tx.date.toISOString().replace("T", " ").slice(0, 19);
     const entityIdSql = entityId ? `'${entityId}'` : "NULL";
@@ -157,8 +164,9 @@ export async function importStatement(
 
     const eventId = newId();
     const t = now();
+    
     await execute(
-            `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
+      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
     );
 
     // Create TransactionRecord
@@ -170,18 +178,19 @@ export async function importStatement(
     importedCount++;
   }
 
-  // Log StatementImport
+  // 5. Log StatementImport
   const importId = newId();
   const t = now();
   const safeFileName = fileName.replace(/'/g, "''");
   const fileHash = newId();
+  
   await execute(
     `INSERT INTO LEDGERMIND.STATEMENT_IMPORTS (ID, USER_ID, ACCOUNT_ID, SOURCE_TYPE, FILE_NAME, FILE_HASH, PARSED_COUNT, IMPORTED_COUNT, SKIPPED_COUNT, IMPORT_STATUS, STARTED_AT, COMPLETED_AT) VALUES ('${importId}', '${userId}', '${accountId}', 'BANK_STATEMENT', '${safeFileName}', '${fileHash}', ${parsed.transactions.length}, ${importedCount}, ${skippedSelfTransfers + skippedBankCharges}, 'COMPLETED', '${t}', '${t}')`
   );
 
   return {
     importId,
-    parserId: parser.id,
+    parserId: parsed.parserId,
     accountId,
     accountCreated,
     totalTransactions: parsed.transactions.length,
@@ -194,4 +203,21 @@ export async function importStatement(
     openingBalance: rec.openingBalance,
     closingBalance: rec.closingBalance,
   };
+}
+
+// ============================================================================
+// 2. CSV WRAPPER (Handles the detection and routing for CSV files)
+// ============================================================================
+export async function importStatement(
+  userId: string,
+  csvContent: string,
+  fileName: string
+): Promise<ImportSummary> {
+  const parser = detectParser(csvContent, fileName);
+  if (!parser) {
+    throw new Error("No parser recognized this CSV file format.");
+  }
+
+  const parsed = parser.parse(csvContent);
+  return importParsedData(userId, parsed, fileName);
 }

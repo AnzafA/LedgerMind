@@ -1,15 +1,20 @@
 import { Router } from "express";
-import { query, execute, now } from "../db/exasol.ts";
+import { query, execute, newId, now } from "../db/exasol.ts";
 
 const router = Router();
-
 const DEMO_EMAIL = "demo@ledgermind.dev";
 
+let cachedUserId: string | null = null;
 async function getDemoUserId(): Promise<string | null> {
+  if (cachedUserId) return cachedUserId;
   const rows = await query<{ ID: string }>(
     `SELECT ID FROM LEDGERMIND.USERS WHERE EMAIL = '${DEMO_EMAIL}'`
   );
-  return rows.length > 0 ? rows[0].ID : null;
+  if (rows.length > 0) {
+    cachedUserId = rows[0].ID;
+    return cachedUserId;
+  }
+  return null;
 }
 
 router.get("/", async (req, res) => {
@@ -18,9 +23,10 @@ router.get("/", async (req, res) => {
     if (!userId) return res.json({ success: true, entities: [] });
 
     const accountId = req.query.accountId as string | undefined;
-    const accountFilter = accountId ? `AND r.ACCOUNT_ID = '${accountId}'` : "";
+    const accountFilter = accountId 
+      ? `AND f.ID IN (SELECT FINANCIAL_EVENT_ID FROM LEDGERMIND.TRANSACTION_RECORDS WHERE ACCOUNT_ID = '${accountId}')` 
+      : "";
 
-    // 1. Fetch entities and totals
     const entities = await query<any>(
       `SELECT 
           e.ID, 
@@ -32,21 +38,19 @@ router.get("/", async (req, res) => {
           MAX(f.OCCURRED_AT) AS LAST_TX
        FROM LEDGERMIND.ENTITIES e
        JOIN LEDGERMIND.FINANCIAL_EVENTS f ON f.ENTITY_ID = e.ID
-       JOIN LEDGERMIND.TRANSACTION_RECORDS r ON r.FINANCIAL_EVENT_ID = f.ID
        WHERE e.USER_ID = '${userId}' ${accountFilter}
        GROUP BY e.ID, e.NAME, e.IS_VERIFIED
        ORDER BY SENT DESC`
     );
 
-    // 2. Fetch all identifiers in one go and attach them in JS
     const identifiers = await query<any>(
       `SELECT ENTITY_ID, IDENTIFIER_VALUE FROM LEDGERMIND.ENTITY_IDENTIFIERS`
     );
-    
-    const idMap = new Map();
+
+    const idMap = new Map<string, string[]>();
     for (const row of identifiers) {
       if (!idMap.has(row.ENTITY_ID)) idMap.set(row.ENTITY_ID, []);
-      idMap.get(row.ENTITY_ID).push(row.IDENTIFIER_VALUE);
+      idMap.get(row.ENTITY_ID)!.push(row.IDENTIFIER_VALUE);
     }
 
     for (const e of entities) {
@@ -102,7 +106,7 @@ router.get("/:id", async (req, res) => {
     });
   } catch (error: any) {
     console.error("Entity detail failed:", error);
-    res.status(500).json({ success: false, message: error?.message });
+    res.status(500).json({ success: false, message: error?.message || String(error) });
   }
 });
 
@@ -113,6 +117,53 @@ router.post("/:id/verify", async (req, res) => {
     );
     res.json({ success: true });
   } catch (error: any) {
+    res.status(500).json({ success: false, message: error?.message });
+  }
+});
+
+router.post("/:id/rename", async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: "Name required" });
+    
+    const safeName = name.replace(/'/g, "''");
+    
+    await execute(
+      `UPDATE LEDGERMIND.ENTITIES SET NAME = '${safeName}', UPDATED_AT = '${now()}' WHERE ID = '${req.params.id}'`
+    );
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error?.message });
+  }
+});
+
+router.post("/:id/merge", async (req, res) => {
+  try {
+    const sourceId = req.params.id;
+    const { targetId } = req.body;
+    
+    if (!targetId || sourceId === targetId) {
+      return res.status(400).json({ success: false, message: "Invalid target ID" });
+    }
+
+    const userId = await getDemoUserId();
+    if (!userId) return res.status(404).json({ success: false, message: "No user" });
+
+    await execute(`UPDATE LEDGERMIND.FINANCIAL_EVENTS SET ENTITY_ID = '${targetId}' WHERE ENTITY_ID = '${sourceId}'`);
+    await execute(`UPDATE LEDGERMIND.ENTITY_IDENTIFIERS SET ENTITY_ID = '${targetId}' WHERE ENTITY_ID = '${sourceId}'`);
+    await execute(`UPDATE LEDGERMIND.ENTITY_ALIASES SET ENTITY_ID = '${targetId}' WHERE ENTITY_ID = '${sourceId}'`);
+
+    const decisionId = newId();
+    const t = now();
+    await execute(
+      `INSERT INTO LEDGERMIND.ENTITY_MATCH_DECISIONS (ID, USER_ID, ENTITY_ID, ALIAS, DECISION, CREATED_AT, UPDATED_AT) VALUES ('${decisionId}', '${userId}', '${targetId}', 'MERGE_FROM_${sourceId}', 'SAME', '${t}', '${t}')`
+    );
+
+    await execute(`DELETE FROM LEDGERMIND.ENTITIES WHERE ID = '${sourceId}'`);
+
+    res.json({ success: true, mergedInto: targetId });
+  } catch (error: any) {
+    console.error("Merge failed:", error);
     res.status(500).json({ success: false, message: error?.message });
   }
 });

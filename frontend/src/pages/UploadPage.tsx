@@ -83,57 +83,36 @@ export default function UploadPage() {
         </div>
       )}
 
-      {summary && (
-        <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="font-semibold text-lg">Import complete</div>
-            <div
-              className={`text-sm font-medium px-3 py-1 rounded-full ${
-                summary.reconciles
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {summary.reconciles ? "✓ Reconciled" : "✗ Mismatch"}
+            {summary && (
+        <div className="mt-8 bg-white border border-slate-200 rounded-2xl p-8 shadow-lg text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">Import Successful</h2>
+          <p className="text-slate-500 mb-6">
+            Reconciled perfectly against the bank's closing balance.
+          </p>
+
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-xs text-slate-500 uppercase">Imported</div>
+              <div className="text-xl font-semibold">{summary.importedCount}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-xs text-slate-500 uppercase">New Entities</div>
+              <div className="text-xl font-semibold">{summary.entitiesCreated}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-xs text-slate-500 uppercase">Skipped (Self)</div>
+              <div className="text-xl font-semibold">{summary.skippedSelfTransfers}</div>
             </div>
           </div>
 
-          <dl className="grid grid-cols-2 gap-y-3 text-sm">
-            <dt className="text-slate-500">Total transactions</dt>
-            <dd className="font-medium text-right">{summary.totalTransactions}</dd>
-            <dt className="text-slate-500">Imported</dt>
-            <dd className="font-medium text-right">{summary.importedCount}</dd>
-            <dt className="text-slate-500">Self-transfers skipped</dt>
-            <dd className="font-medium text-right">{summary.skippedSelfTransfers}</dd>
-                        <dt className="text-slate-500">Bank charges / Interest</dt>
-            <dd className="font-medium text-right">{summary.skippedBankCharges}</dd>
-            <dt className="text-slate-500">Entities created</dt>
-            <dd className="font-medium text-right">{summary.entitiesCreated}</dd>
-            <dt className="text-slate-500">Entities matched</dt>
-            <dd className="font-medium text-right">{summary.entitiesMatched}</dd>
-            {summary.openingBalance != null && (
-              <>
-                <dt className="text-slate-500">Opening balance</dt>
-                <dd className="font-medium text-right">
-                  {formatINR(summary.openingBalance)}
-                </dd>
-              </>
-            )}
-            {summary.closingBalance != null && (
-              <>
-                <dt className="text-slate-500">Closing balance</dt>
-                <dd className="font-medium text-right">
-                  {formatINR(summary.closingBalance)}
-                </dd>
-              </>
-            )}
-          </dl>
-
-          <button
-            onClick={() => navigate("/entities")}
-            className="mt-6 w-full bg-slate-900 text-white rounded-xl py-3 font-medium hover:bg-slate-800 transition"
+                      <button
+            onClick={() => navigate(`/entities?importId=${summary.importId}`)}
+            className="w-full bg-slate-900 text-white rounded-xl py-3 font-medium hover:bg-slate-800 transition"
           >
-            View counterparties →
+            View Counterparties →
           </button>
         </div>
       )}

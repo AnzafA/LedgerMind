@@ -23,6 +23,7 @@ router.get("/", async (req, res) => {
     if (!userId) return res.json({ success: true, entities: [] });
 
     const accountId = req.query.accountId as string | undefined;
+    const importId = req.query.importId as string | undefined;
     const startDate = req.query.startDate as string | undefined;
     const endDate = req.query.endDate as string | undefined;
 
@@ -30,6 +31,9 @@ router.get("/", async (req, res) => {
     
     if (accountId) {
       filters += ` AND f.ID IN (SELECT FINANCIAL_EVENT_ID FROM LEDGERMIND.TRANSACTION_RECORDS WHERE ACCOUNT_ID = '${accountId}')`;
+    }
+    if (importId) {
+      filters += ` AND f.IMPORT_ID = '${importId}'`;
     }
     if (startDate && endDate) {
       filters += ` AND f.OCCURRED_AT >= '${startDate}' AND f.OCCURRED_AT <= '${endDate}'`;

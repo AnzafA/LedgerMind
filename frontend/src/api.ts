@@ -64,11 +64,13 @@ export async function listAccounts(): Promise<Account[]> {
 export async function listEntities(
   accountId?: string, 
   startDate?: string, 
-  endDate?: string
+  endDate?: string,
+  importId?: string
 ): Promise<EntitySummary[]> {
   let url = `${API}/entities?`;
   if (accountId) url += `accountId=${encodeURIComponent(accountId)}&`;
   if (startDate && endDate) url += `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&`;
+  if (importId) url += `importId=${encodeURIComponent(importId)}&`;
   
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15000);

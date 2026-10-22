@@ -57,10 +57,27 @@ export async function parsePdfStatement(pdfBuffer: Buffer): Promise<ParseResult>
       return;
     }
 
-    let date = new Date(currentDateStr);
-    if (isNaN(date.getTime())) {
+        let date = new Date(0); // Default to 1970
+    const dateParts = currentDateStr.match(/(\d{1,2})[\s/-]([A-Za-z]{3,9}|\d{1,2})[\s/-](\d{2,4})/);
+    
+    if (dateParts) {
+      const day = parseInt(dateParts[1], 10);
+      let month = 0;
+      
+      // Handle both "Oct" and "10" for month
+      if (isNaN(parseInt(dateParts[2], 10))) {
+        const months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+        month = months.indexOf(dateParts[2].toLowerCase().substring(0, 3));
+      } else {
+        month = parseInt(dateParts[2], 10) - 1;
+      }
+      
+      let year = parseInt(dateParts[3], 10);
+      if (year < 100) year += 2000;
+      
+      date = new Date(Date.UTC(year, month, day));
+    } else {
       warnings.push(`Invalid date format: '${currentDateStr}'. Defaulting to 1970-01-01.`);
-      date = new Date(0);
     }
 
     let amount = 0;

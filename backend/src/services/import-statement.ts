@@ -33,6 +33,8 @@ export async function importParsedData(
   if (!rec.ok) {
     throw new Error("Reconciliation failed: " + rec.message);
   }
+  
+  const importId = newId(); // Declared ONCE here at the top
 
   // 2. Find or create Account
   let accountId: string;
@@ -56,6 +58,7 @@ export async function importParsedData(
     const safeType = (parsed.accountInfo.accountType || "Savings").replace(/'/g, "''");
     const safeBranch = (parsed.accountInfo.branchName || "").replace(/'/g, "''");
     
+    // Corrected the SQL here back to ACCOUNTS
     await execute(
       `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', 'Indian Bank', '${last4}', '${accountType}', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
     );
@@ -157,7 +160,11 @@ export async function importParsedData(
          AND ${entityId ? `ENTITY_ID = '${entityId}'` : "ENTITY_ID IS NULL"}`
     );
 
-    if (existing.length > 0) {
+        if (existing.length > 0) {
+      // If it exists, just update the IMPORT_ID so it shows up in the new filtered view
+      await execute(
+        `UPDATE LEDGERMIND.FINANCIAL_EVENTS SET IMPORT_ID = '${importId}' WHERE ID = '${existing[0].ID}'`
+      );
       importedCount++;
       continue;
     }
@@ -165,8 +172,9 @@ export async function importParsedData(
     const eventId = newId();
     const t = now();
     
+    // Added IMPORT_ID to the INSERT statement
     await execute(
-      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
+      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, IMPORT_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, '${importId}', ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
     );
 
     // Create TransactionRecord
@@ -179,7 +187,6 @@ export async function importParsedData(
   }
 
   // 5. Log StatementImport
-  const importId = newId();
   const t = now();
   const safeFileName = fileName.replace(/'/g, "''");
   const fileHash = newId();

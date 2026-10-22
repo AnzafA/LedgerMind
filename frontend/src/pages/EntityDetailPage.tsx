@@ -21,12 +21,22 @@ function formatINR(n: number): string {
 }
 
 function formatDate(s: string): string {
-  const d = new Date(s);
-  return d.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  // Exasol might return "2026-10-08 00:00:00". We only want the date part.
+  const datePart = s.split(" ")[0]; 
+  
+  // If it's already YYYY-MM-DD
+  if (datePart.includes("-")) {
+    const [year, month, day] = datePart.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+  
+  // Fallback
+  return s;
 }
 
 export default function EntityDetailPage() {

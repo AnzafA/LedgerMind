@@ -13,6 +13,7 @@ function formatINR(n: number): string {
 export default function DashboardPage() {
   const [entities, setEntities] = useState<EntitySummary[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const [query, setQuery] = useState("");
   const [timeRange, setTimeRange] = useState("all");
@@ -20,13 +21,12 @@ export default function DashboardPage() {
   
   const navigate = useNavigate();
 
-  // 1. Fetch Accounts on mount
   useEffect(() => {
     listAccounts().then(setAccounts);
   }, []);
 
-  // 2. Fetch Entities whenever time or account changes
   useEffect(() => {
+    setLoading(true);
     const now = new Date();
     let start = "";
     let end = "";
@@ -51,7 +51,9 @@ export default function DashboardPage() {
       selectedAccount || undefined, 
       start || undefined, 
       end || undefined
-    ).then(setEntities);
+    )
+      .then(setEntities)
+      .finally(() => setLoading(false));
     
   }, [timeRange, selectedAccount]);
 
@@ -67,6 +69,34 @@ export default function DashboardPage() {
     }
   };
 
+  // 1. Show spinner while loading (Early Return)
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // 2. Empty state ONLY if the database is truly empty (no filters applied)
+  if (entities.length === 0 && timeRange === "all" && !selectedAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+          <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-semibold mb-2">No data yet</h2>
+        <p className="text-slate-500 mb-6 max-w-md">Upload your first bank statement to see your financial memory come to life.</p>
+        <Link to="/upload" className="px-6 py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition">
+          Import a Statement
+        </Link>
+      </div>
+    );
+  }
+
+  // 3. Main Dashboard Render
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-4">
@@ -134,10 +164,10 @@ export default function DashboardPage() {
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Total Received</div>
           <div className="text-2xl font-semibold text-green-700">{formatINR(totalReceived)}</div>
         </div>
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+        <Link to="/entities" className="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm hover:bg-amber-100 transition">
           <div className="text-xs text-amber-700 uppercase tracking-wider mb-2">Needs Review</div>
           <div className="text-2xl font-semibold text-amber-900">{needsReview}</div>
-        </div>
+        </Link>
       </div>
 
       {/* RECENT ENTITIES */}
@@ -158,6 +188,8 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+        
+        {/* If filters return 0 results */}
         {entities.length === 0 && (
           <div className="p-8 text-center text-slate-500">
             No transactions found for this filter.

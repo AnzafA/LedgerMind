@@ -7,6 +7,8 @@ import entitiesRoutes from "./routes/entities.routes.ts";
 import accountsRoutes from "./routes/accounts.routes.ts";
 import transactionsRoutes from "./routes/transactions.routes.ts";
 import analyticsRoutes from "./routes/analytics.routes.ts";
+import importsRoutes from "./routes/imports.routes.ts";
+
 
 dotenv.config();
 
@@ -24,6 +26,7 @@ app.use("/api/entities", entitiesRoutes);
 app.use("/api/accounts", accountsRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/imports", importsRoutes);
 
 app.get("/api/health", async (_req, res) => {
   try {

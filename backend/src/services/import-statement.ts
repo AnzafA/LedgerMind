@@ -59,9 +59,12 @@ export async function importParsedData(
     const safeBranch = (parsed.accountInfo.branchName || "").replace(/'/g, "''");
     
     // Corrected the SQL here back to ACCOUNTS
+        const safeBankName = (parsed.accountInfo.bankName || "Unknown Bank").replace(/'/g, "''");
+    
     await execute(
-      `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', 'Indian Bank', '${last4}', '${accountType}', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
+      `INSERT INTO LEDGERMIND.ACCOUNTS (ID, USER_ID, NAME, BANK_NAME, ACCOUNT_LAST4, ACCOUNT_TYPE, IFSC, BRANCH, CURRENCY, IS_PRIMARY, CREATED_AT, UPDATED_AT) VALUES ('${accountId}', '${userId}', '${safeType}', '${safeBankName}', '${last4}', '${accountType}', '${parsed.accountInfo.ifsc || ""}', '${safeBranch}', 'INR', TRUE, '${t}', '${t}')`
     );
+
     accountCreated = true;
   }
 

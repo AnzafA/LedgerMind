@@ -5,6 +5,8 @@ import UploadPage from "./pages/UploadPage";
 import EntitiesPage from "./pages/EntitiesPage";
 import EntityDetailPage from "./pages/EntityDetailPage";
 import TransactionsPage from "./pages/TransactionsPage";
+import AccountsPage from "./pages/AccountsPage";
+
 
 export default function App() {
   return (
@@ -16,6 +18,7 @@ export default function App() {
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/entities" element={<EntitiesPage />} />
           <Route path="/entities/:id" element={<EntityDetailPage />} />
+          <Route path="/accounts" element={<AccountsPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

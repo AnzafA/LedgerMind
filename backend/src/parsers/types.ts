@@ -20,6 +20,7 @@ export interface ParsedAccountInfo {
   currency?: string;
   openingBalance?: number;
   closingBalance?: number;
+  bankName?: string;
 }
 
 export interface ParseResult {

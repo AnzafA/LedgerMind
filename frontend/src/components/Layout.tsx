@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     { name: "Transactions", path: "/transactions" },
     { name: "Counterparties", path: "/entities" },
     { name: "Import Statement", path: "/upload" },
+    { name: "Import History", path: "/accounts" },
   ];
 
   return (

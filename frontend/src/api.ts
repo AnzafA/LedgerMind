@@ -181,3 +181,18 @@ export async function getMonthlyAnalytics(): Promise<MonthlyAnalytics[]> {
   const data = await res.json();
   return data.data ?? [];
 }
+export interface ImportHistory {
+  ID: string;
+  FILE_NAME: string;
+  PARSED_COUNT: number;
+  IMPORTED_COUNT: number;
+  SKIPPED_COUNT: number;
+  IMPORT_STATUS: string;
+  STARTED_AT: string;
+}
+
+export async function listImports(): Promise<ImportHistory[]> {
+  const res = await fetch(`${API}/imports`);
+  const data = await res.json();
+  return data.imports ?? [];
+}

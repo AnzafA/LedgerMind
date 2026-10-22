@@ -150,7 +150,7 @@ export async function importParsedData(
     }
 
     // Create FinancialEvent (skip if already exists)
-    const safeDesc = tx.description.replace(/'/g, "''");
+        
     const occ = tx.date.toISOString().replace("T", " ").slice(0, 19);
     const entityIdSql = entityId ? `'${entityId}'` : "NULL";
 
@@ -162,7 +162,7 @@ export async function importParsedData(
          AND OCCURRED_AT = '${occ}'
          AND ${entityId ? `ENTITY_ID = '${entityId}'` : "ENTITY_ID IS NULL"}`
     );
-
+        const isValid = tx.isValidated === false ? false : true;
         if (existing.length > 0) {
       // If it exists, just update the IMPORT_ID so it shows up in the new filtered view
       await execute(
@@ -176,8 +176,12 @@ export async function importParsedData(
     const t = now();
     
     // Added IMPORT_ID to the INSERT statement
+          
+    // Prepend a warning tag to the description if it's invalid
+    const safeDesc = (tx.isValidated === false ? "[NEEDS REVIEW] " : "") + tx.description.replace(/'/g, "''");
+
     await execute(
-      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, IMPORT_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, '${importId}', ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', '${t}', '${t}')`
+      `INSERT INTO LEDGERMIND.FINANCIAL_EVENTS (ID, USER_ID, ENTITY_ID, IMPORT_ID, AMOUNT, DIRECTION, TX_STATUS, OCCURRED_AT, DESCRIPTION, IS_VALIDATED, CREATED_AT, UPDATED_AT) VALUES ('${eventId}', '${userId}', ${entityIdSql}, '${importId}', ${tx.amount}, '${tx.direction}', 'COMPLETED', '${occ}', '${safeDesc}', ${isValid}, '${t}', '${t}')`
     );
 
     // Create TransactionRecord

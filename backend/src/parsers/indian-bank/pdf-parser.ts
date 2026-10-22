@@ -1,5 +1,5 @@
 import { extractText, getDocumentProxy } from "unpdf";
-import { ParsedAccountInfo, ParsedTransaction, ParseResult } from "../types.ts";
+import { ParsedAccountInfo, ParsedTransaction, ParseResult, FormatNotRecognizedError } from "../types.ts";
 
 export async function parsePdfStatement(pdfBuffer: Buffer): Promise<ParseResult> {
   const pdf = await getDocumentProxy(new Uint8Array(pdfBuffer));
@@ -13,7 +13,7 @@ export async function parsePdfStatement(pdfBuffer: Buffer): Promise<ParseResult>
   
   const headerRegex = /(Date|Txn Date).*?(Transaction Details|Narration|Particulars|Description)/i;
   const headerIndex = lines.findIndex((l: string) => headerRegex.test(l));
-  if (headerIndex === -1) throw new Error("Could not find the transaction table headers in this PDF.");
+    if (headerIndex === -1) throw new FormatNotRecognizedError("Could not find the transaction table headers in this PDF.");
 
   const accountInfo: ParsedAccountInfo = {};
   const warnings: string[] = [];

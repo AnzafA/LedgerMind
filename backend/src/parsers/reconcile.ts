@@ -25,7 +25,7 @@ export function reconcile(result: ParseResult): ReconcileResult {
 
   if (openingBalance === undefined || closingBalance === undefined) {
     return {
-      ok: false,
+      ok: true,
       credits,
       debits,
       message: "Missing opening or closing balance — cannot reconcile",

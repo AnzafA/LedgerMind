@@ -27,8 +27,8 @@ router.get("/", async (req, res) => {
     const startDate = req.query.startDate as string | undefined;
     const endDate = req.query.endDate as string | undefined;
 
-    let filters = `WHERE e.USER_ID = '${userId}'`;
-    
+    let filters = `WHERE e.USER_ID = '${userId}' AND f.IS_VALIDATED = TRUE`; // <-- ADDED HERE
+
     if (accountId) {
       filters += ` AND f.ID IN (SELECT FINANCIAL_EVENT_ID FROM LEDGERMIND.TRANSACTION_RECORDS WHERE ACCOUNT_ID = '${accountId}')`;
     }

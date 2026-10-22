@@ -6,6 +6,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const navItems = [
     { name: "Dashboard", path: "/" },
+    { name: "Transactions", path: "/transactions" },
     { name: "Counterparties", path: "/entities" },
     { name: "Import Statement", path: "/upload" },
   ];

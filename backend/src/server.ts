@@ -5,6 +5,8 @@ import { query } from "./db/exasol.ts";
 import statementsRoutes from "./routes/statements.routes.ts";
 import entitiesRoutes from "./routes/entities.routes.ts";
 import accountsRoutes from "./routes/accounts.routes.ts";
+import transactionsRoutes from "./routes/transactions.routes.ts";
+import analyticsRoutes from "./routes/analytics.routes.ts";
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use((err: any, req: any, res: any, next: any) => {
 app.use("/api/statements", statementsRoutes);
 app.use("/api/entities", entitiesRoutes);
 app.use("/api/accounts", accountsRoutes);
+app.use("/api/transactions", transactionsRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 app.get("/api/health", async (_req, res) => {
   try {

@@ -151,3 +151,33 @@ export async function importStatement(file: File): Promise<ImportSummary> {
     throw new Error(err.message || "Network error");
   }
 } 
+export interface GlobalTransaction {
+  ID: string;
+  AMOUNT: string;
+  DIRECTION: "DEBIT" | "CREDIT";
+  OCCURRED_AT: string;
+  DESCRIPTION: string;
+  ENTITY_NAME: string | null;
+  ACCOUNT_NAME: string | null;
+  ACCOUNT_LAST4: string | null;
+}
+
+export async function listTransactions(accountId?: string): Promise<GlobalTransaction[]> {
+  const url = accountId 
+    ? `${API}/transactions?accountId=${encodeURIComponent(accountId)}` 
+    : `${API}/transactions`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.transactions ?? [];
+}
+export interface MonthlyAnalytics {
+  month: string;
+  sent: number;
+  received: number;
+}
+
+export async function getMonthlyAnalytics(): Promise<MonthlyAnalytics[]> {
+  const res = await fetch(`${API}/analytics/monthly`);
+  const data = await res.json();
+  return data.data ?? [];
+}

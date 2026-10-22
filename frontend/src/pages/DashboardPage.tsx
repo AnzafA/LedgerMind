@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { listEntities, listAccounts, type EntitySummary, type Account } from "../api";
+import { getMonthlyAnalytics, type MonthlyAnalytics } from "../api";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from "recharts";
 
 function formatINR(n: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -20,7 +22,9 @@ export default function DashboardPage() {
   const [selectedAccount, setSelectedAccount] = useState("");
   
   const navigate = useNavigate();
-
+    useEffect(() => {
+    getMonthlyAnalytics().then(setChartData);
+  }, []);
   useEffect(() => {
     listAccounts().then(setAccounts);
   }, []);
@@ -61,6 +65,18 @@ export default function DashboardPage() {
   const totalReceived = entities.reduce((sum, e) => sum + Number(e.RECEIVED), 0);
   const needsReview = entities.filter((e) => !e.IS_VERIFIED).length;
   const totalTx = entities.reduce((sum, e) => sum + e.TX_COUNT, 0);
+    // Calculate the Top 5 entities you sent money to
+  const topSpendersData = [...entities]
+    .filter((e) => Number(e.SENT) > 0)
+    .sort((a, b) => Number(b.SENT) - Number(a.SENT))
+    .slice(0, 5)
+    .map((e) => ({
+      name: e.NAME.length > 15 ? e.NAME.substring(0, 15) + "..." : e.NAME,
+      fullName: e.NAME,
+      amount: Number(e.SENT),
+    }))
+    .reverse(); // Recharts renders bottom-to-top, so we reverse to show the biggest at the top
+  const [chartData, setChartData] = useState<MonthlyAnalytics[]>([]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,7 +185,44 @@ export default function DashboardPage() {
           <div className="text-2xl font-semibold text-amber-900">{needsReview}</div>
         </Link>
       </div>
-
+            {/* TOP PAYEES CHART */}
+      {topSpendersData.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-6 mb-10 shadow-sm h-80">
+          <h2 className="text-lg font-semibold mb-6">Top 5 Counterparties (Money Sent)</h2>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={topSpendersData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
+              <XAxis type="number" hide />
+              <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={100} />
+              <Tooltip 
+                formatter={(value: any) => formatINR(Number(value))}
+                labelFormatter={(label, payload) => payload[0]?.payload?.fullName || label}
+                cursor={{ fill: '#f8fafc' }}
+              />
+              <Bar dataKey="amount" radius={[0, 4, 4, 0]} maxBarSize={30}>
+                {topSpendersData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={index === topSpendersData.length - 1 ? "#ef4444" : "#fca5a5"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+                {/* CASH FLOW CHART */}
+      {chartData.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-6 mb-10 shadow-sm h-80">
+          <h2 className="text-lg font-semibold mb-4">Monthly Cash Flow</h2>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={(val) => `₹${val / 1000}k`} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(value: any) => formatINR(Number(value))} cursor={{ fill: '#f1f5f9' }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+              <Bar dataKey="sent" name="Money Sent" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="received" name="Money Received" fill="#15803d" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
       {/* RECENT ENTITIES */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Top Counterparties</h2>
